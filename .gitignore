@@ -1,0 +1,13 @@
+# directory
+/bin
+/.vscode
+
+# file extention
+*.wav
+
+# specific dirs/files
+
+# exclude gitignore
+!/**/.gitkeep
+!/**/zundamon.wav
+!/**/metan.wav
