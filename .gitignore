@@ -1,0 +1,10 @@
+# directory
+/bin
+/.vscode
+
+# file extention
+
+# specific dirs/files
+
+
+!/**/.gitkeep
