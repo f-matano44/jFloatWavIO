@@ -7,7 +7,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 
 
-public class MonoInput
+public class MonoInput extends WavInput
 {
     private int fs;     // sample rate
     private double[] x; // signal data
