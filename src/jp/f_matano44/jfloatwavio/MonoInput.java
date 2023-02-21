@@ -7,7 +7,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 
 
-public class WavInput
+public class MonoInput
 {
     private int fs;     // sample rate
     private double[] x; // signal data
@@ -23,7 +23,7 @@ public class WavInput
     }
 
 
-    public WavInput(String FILENAME)
+    public MonoInput(String FILENAME)
     {
         final File f = new File(FILENAME);
         byte[] sBytes = null;
