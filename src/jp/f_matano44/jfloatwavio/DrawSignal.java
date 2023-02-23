@@ -10,6 +10,7 @@ public class DrawSignal extends JFrame
         final int 
             windowWidth = 600,
             windowHeight = 10 + 190 * signal.length;
+        // window setting
         setTitle(windowTitle);
         setBackground(Color.WHITE);
         setSize(windowWidth, windowHeight);
@@ -27,7 +28,7 @@ public class DrawSignal extends JFrame
         public PanelClass(double[][] signal){ this.x = signal; }
 
         @Override
-        public void paint(Graphics g)
+        public void paint(final Graphics g)
         {
             // canvas size
             final int frameWidth = 10;
@@ -49,7 +50,8 @@ public class DrawSignal extends JFrame
             // draw panel
             for(int i=0; i<x.length; i++)
             {
-                final int xAxis = 0, yAxis=1, startPoint=0, endPoint=1,
+                final int xAxis = 0, yAxis=1, startPoint=0, endPoint=1;
+                final int
                     xOffset = frameWidth,
                     yOffset = frameWidth + canvasHeight/2 + ((frameWidth+canvasHeight)*i);
                 int[][] pos = new int[2][2];
