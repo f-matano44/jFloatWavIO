@@ -7,7 +7,7 @@ public class Test
         MonoInput wav = new MonoInput("helloworld.wav");
         double[] x = wav.getX();
 
-        var frame = new DrawSignal("Test Waveform", x);
+        var frame = new DrawSignal("Signal", x, x, x);
         // wav.printAudioFormat();
     }
 }
