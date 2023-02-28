@@ -1,16 +1,80 @@
 package jp.f_matano44.jfloatwavio;
 
+import java.io.File;
 import java.nio.ByteBuffer;
-import javax.sound.sampled.AudioFormat;
+import java.util.concurrent.CyclicBarrier;
 
-abstract class WavInput
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+
+
+public class WavIO
 {
     // variables
-    protected AudioFormat format;
-    protected int fs;       // sample rate
-    protected double[][] x; // signal data
+    private AudioFormat format;
+    private int fs;       // sample rate
+    private double[][] x; // signal data
     // constants
-    protected static final int intIs4Bytes = 4;
+    private static final int intIs4Bytes = 4;
+
+    // getter
+    public AudioFormat getFormat(){ return this.format; }
+    public int getFs(){ return this.fs; }
+    public double[][] getX(){ return this.x; }
+    public float[][] getXf(){
+        float[][] xf = new float[this.x.length][this.x[0].length];
+        for(int i=0; i<this.x.length; i++)
+            for(int j=0; j<this.x[i].length; j++)
+                xf[i][j] = (float)this.x[i][j];
+        return xf;
+    }
+
+
+    // constructor
+    public WavIO(String FILENAME)
+    {
+        final File f = new File(FILENAME);
+        byte[] sByteArray = null;
+        byte[][] arraySeparatedByChannels = null;
+        AudioFormat sFormat = null;
+        int channels = 0, xLength = 0, nBits = 0;
+
+        // import wav file data
+        try (var s = AudioSystem.getAudioInputStream(f))
+        {
+            sByteArray = s.readAllBytes();
+            sFormat = s.getFormat();
+
+            channels = sFormat.getChannels();
+            xLength = (sByteArray.length/channels)/(8 * sFormat.getSampleSizeInBits());
+            nBits = sFormat.getSampleSizeInBits();
+
+            // reject don't allowed files
+            if(channels != 1 && channels != 2)
+                throw new Exception("jFloatWavIO is allowed monoral or stereo only..");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        arraySeparatedByChannels = new byte[channels][sByteArray.length/channels];
+        this.x = new double[channels][xLength];
+        // separate byte data by channels (次はここを作る)
+        arraySeparatedByChannels[0] = sByteArray;
+        // get signal data
+        for(int i=0; i<channels; i++)
+            this.x[i] = byte2double(
+                arraySeparatedByChannels[i],
+                sFormat.getSampleSizeInBits(),
+                sFormat.isBigEndian()
+            );
+        // get sampling rate
+        this.fs = (int)sFormat.getSampleRate();
+        // get format info
+        this.format = sFormat;
+    }
 
 
     // methods

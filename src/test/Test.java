@@ -4,10 +4,10 @@ public class Test
 {
     public static void main(String[] args)
     {
-        MonoInput wav = new MonoInput("helloworld.wav");
-        double[] x = wav.getX();
+        WavIO wav = new WavIO("helloworld.wav");
+        double[][] x = wav.getX();
 
-        new DrawSignal("Signal", x, x, x);
+        new DrawSignal("Signal", x[0], x[0], x[0]);
         // wav.printAudioFormat();
     }
 }
