@@ -1,11 +1,8 @@
 package jp.f_matano44.jfloatwavio;
 
-import java.io.File;
-import java.nio.ByteBuffer;
-import java.util.concurrent.CyclicBarrier;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
+import java.io.*;
+import java.nio.*;
+import javax.sound.sampled.*;
 
 
 public class WavIO
@@ -66,9 +63,7 @@ public class WavIO
         // get signal data
         for(int i=0; i<channels; i++)
             this.x[i] = byte2double(
-                arraySeparatedByChannels[i],
-                sFormat.getSampleSizeInBits(),
-                sFormat.isBigEndian()
+                arraySeparatedByChannels[i], nBits, sFormat.isBigEndian()
             );
         // get sampling rate
         this.fs = (int)sFormat.getSampleRate();
