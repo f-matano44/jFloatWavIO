@@ -15,7 +15,6 @@ public class WavIO
 
     // getter
     public AudioFormat getFormat(){ return this.format; }
-    public double getFs(){ return this.format.getSampleRate(); }
     public double[][] getX(){ return this.x; }
     public float[][] getXf(){
         float[][] xf = new float[this.x.length][this.x[0].length];
@@ -30,9 +29,9 @@ public class WavIO
     public WavIO(final String FILENAME)
     {
         final File f = new File(FILENAME);
+        int channels = 0;
         byte[] sBytes = null;
         byte[][] sBytesSeparatedByChannels = null;
-        int channels = 0, nBits = 0, xLength = 0;
 
         // import wav file data
         try (final var s = AudioSystem.getAudioInputStream(f))
@@ -41,8 +40,6 @@ public class WavIO
             this.format = s.getFormat();
 
             channels = this.format.getChannels();
-            nBits = this.format.getSampleSizeInBits();
-            xLength = (sBytes.length/channels) / (8*nBits);
 
             // reject don't allowed files
             if(channels != 1 && channels != 2)
@@ -54,52 +51,64 @@ public class WavIO
             System.exit(1);
         }
 
-        sBytesSeparatedByChannels = new byte[channels][sBytes.length/channels];
-        this.x = new double[channels][xLength];
-        // separate byte data by channels (つぎここを作る)
-        sBytesSeparatedByChannels[0] = sBytes;
-        // get signal data
-        for(int i=0; i<channels; i++)
-            this.x[i] = byte2double(
-                sBytesSeparatedByChannels[i], nBits, this.format.isBigEndian()
-            );
+        // byte -> double
+        sBytesSeparatedByChannels = separateByChannels(sBytes);
+        this.x = byte2double(sBytesSeparatedByChannels);
     }
 
 
     // methods
-    protected double[] byte2double(
-        final byte[] byteArray, final int nBits, final boolean isBigEndian)
+    private byte[][] separateByChannels(final byte[] byteArray)
     {
         final int
-            nBytes = nBits / 8,
-            sampleNum = byteArray.length / nBytes;
-        double[] doubleArray = new double[sampleNum];
-        byte[] temp = new byte[intIs4Bytes];
+            channels = this.format.getChannels(),
+            frameSize = this.format.getFrameSize();
+        byte[][] sepByte = new byte[channels][byteArray.length/channels];
 
-        for(int i=0; i<byteArray.length; i++)
-        {
-            final int
-                tPos = i % nBytes,
-                dPos = i / nBytes;
-
-            temp[tPos] = byteArray[i];
-            if(tPos % nBytes == nBytes - 1)
-            {
-                // preProcess
-                temp = getBigEndian(temp, isBigEndian);
-                temp = fillArray(temp, nBytes);
-                // byte to int
-                doubleArray[dPos] = (double)ByteBuffer.wrap(temp).getInt();
-                // int to double
-                doubleArray[dPos] = (double)doubleArray[dPos] / Math.pow(2, nBits);
-            }
-        }
-
-        return doubleArray;
+        sepByte[0] = byteArray;
+        return sepByte;
     }
 
 
-    protected byte[] getBigEndian(byte[] array, final boolean isBigEndian)
+    private double[][] byte2double(final byte[][] bArray)
+    {
+        final boolean
+            isBigEndian = this.format.isBigEndian();
+        final int
+            channels = this.format.getChannels(),
+            nBits = this.format.getSampleSizeInBits(),
+            nBytes = nBits / 8,
+            sampleNum = bArray[0].length / nBytes;
+        byte[] temp = new byte[intIs4Bytes];
+        double[][] dArray = new double[channels][sampleNum];
+
+        for(int c=0; c<channels; c++)
+        {
+            for(int i=0; i<bArray[c].length; i++)
+            {
+                final int
+                    tPos = i % nBytes,
+                    dPos = i / nBytes;
+    
+                temp[tPos] = bArray[c][i];
+                if(tPos % nBytes == nBytes - 1)
+                {
+                    // preProcess
+                    temp = getBigEndian(temp, isBigEndian);
+                    temp = fillArray(temp, nBytes);
+                    // byte to int
+                    dArray[c][dPos] = (double)ByteBuffer.wrap(temp).getInt();
+                    // int to double
+                    dArray[c][dPos] = (double)dArray[c][dPos] / Math.pow(2, nBits);
+                }
+            }
+        }
+
+        return dArray;
+    }
+
+
+    private byte[] getBigEndian(byte[] array, final boolean isBigEndian)
     {
         if(!isBigEndian)
         {
@@ -116,7 +125,7 @@ public class WavIO
     }
 
 
-    protected byte[] fillArray(byte[] array, int nBytes)
+    private byte[] fillArray(byte[] array, int nBytes)
     {
         final int 
             fillDigit = intIs4Bytes-nBytes,
@@ -125,7 +134,7 @@ public class WavIO
         {
             if(fillNum == 0)
                 array[i] = 0;
-            else
+            else // fillNum == 1
                 array[i] = -1;
         }
         return array;

@@ -5,7 +5,7 @@
 * [ant 1.10](https://ant.apache.org/bindownload.cgi)
 
 ## Build
-Run under command so source codes are builded jar file in `bin/`.
+Run under command, and then source codes are builded jar file in `bin/`.
 ```SH
 jfloatwavio/$ ant
 ```
