@@ -43,7 +43,8 @@ public class WavIO
 
             // reject don't allowed files
             if(channels != 1 && channels != 2)
-                throw new Exception("jFloatWavIO is allowed monoral or stereo only..");
+                throw new Exception(
+                    "jFloatWavIO is allowed monoral or stereo only..");
         }
         catch (Exception e)
         {
@@ -62,7 +63,8 @@ public class WavIO
     {
         final int
             channels = this.format.getChannels(),
-            frameSize = this.format.getFrameSize();
+            frameSize = this.format.getFrameSize(),
+            sampleSize = frameSize / channels;
         byte[][] sepByte = new byte[channels][byteArray.length/channels];
 
         sepByte[0] = byteArray;
@@ -128,7 +130,7 @@ public class WavIO
     private byte[] fillArray(byte[] array, int nBytes)
     {
         final int 
-            fillDigit = intIs4Bytes-nBytes,
+            fillDigit = intIs4Bytes - nBytes,
             fillNum = (array[fillDigit] >> 7) & 1;
         for(int i=0; i<fillDigit; i++)
         {
