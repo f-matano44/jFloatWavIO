@@ -7,7 +7,8 @@ public class Test
         WavIO wav = new WavIO("helloworld.wav");
         double[][] x = wav.getX();
 
-        new DrawSignal("Signal", x[0], x[0], x[0]);
-        // wav.printAudioFormat();
+        new DrawSignal("Signal", x[0], x[0]);
+
+        wav.printAudioFormat();
     }
 }

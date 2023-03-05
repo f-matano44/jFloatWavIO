@@ -7,16 +7,15 @@ import javax.sound.sampled.*;
 
 public class WavIO
 {
-    // variables
+    // member variables
     private AudioFormat format;
-    private int fs;       // sample rate
     private double[][] x; // signal data
     // constants
     private static final int intIs4Bytes = 4;
 
     // getter
     public AudioFormat getFormat(){ return this.format; }
-    public int getFs(){ return this.fs; }
+    public double getFs(){ return this.format.getSampleRate(); }
     public double[][] getX(){ return this.x; }
     public float[][] getXf(){
         float[][] xf = new float[this.x.length][this.x[0].length];
@@ -27,24 +26,23 @@ public class WavIO
     }
 
 
-    // constructor
-    public WavIO(String FILENAME)
+    // constructor (input)
+    public WavIO(final String FILENAME)
     {
         final File f = new File(FILENAME);
-        byte[] sByteArray = null;
-        byte[][] arraySeparatedByChannels = null;
-        AudioFormat sFormat = null;
-        int channels = 0, xLength = 0, nBits = 0;
+        byte[] sBytes = null;
+        byte[][] sBytesSeparatedByChannels = null;
+        int channels = 0, nBits = 0, xLength = 0;
 
         // import wav file data
-        try (var s = AudioSystem.getAudioInputStream(f))
+        try (final var s = AudioSystem.getAudioInputStream(f))
         {
-            sByteArray = s.readAllBytes();
-            sFormat = s.getFormat();
+            sBytes = s.readAllBytes();
+            this.format = s.getFormat();
 
-            channels = sFormat.getChannels();
-            xLength = (sByteArray.length/channels)/(8 * sFormat.getSampleSizeInBits());
-            nBits = sFormat.getSampleSizeInBits();
+            channels = this.format.getChannels();
+            nBits = this.format.getSampleSizeInBits();
+            xLength = (sBytes.length/channels) / (8*nBits);
 
             // reject don't allowed files
             if(channels != 1 && channels != 2)
@@ -56,19 +54,15 @@ public class WavIO
             System.exit(1);
         }
 
-        arraySeparatedByChannels = new byte[channels][sByteArray.length/channels];
+        sBytesSeparatedByChannels = new byte[channels][sBytes.length/channels];
         this.x = new double[channels][xLength];
-        // separate byte data by channels (次はここを作る)
-        arraySeparatedByChannels[0] = sByteArray;
+        // separate byte data by channels (つぎここを作る)
+        sBytesSeparatedByChannels[0] = sBytes;
         // get signal data
         for(int i=0; i<channels; i++)
             this.x[i] = byte2double(
-                arraySeparatedByChannels[i], nBits, sFormat.isBigEndian()
+                sBytesSeparatedByChannels[i], nBits, this.format.isBigEndian()
             );
-        // get sampling rate
-        this.fs = (int)sFormat.getSampleRate();
-        // get format info
-        this.format = sFormat;
     }
 
 
