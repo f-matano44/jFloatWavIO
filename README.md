@@ -17,7 +17,7 @@ Read `src/test/Test.java`.
 ```SH
 jfloatwavio/$ ant
 jfloatwavio/$ cd bin/
-jfloatwavio/bin/$ java Test
+jfloatwavio/bin/$ java -cp "jfloatwavio.jar:" Test
 ```
 
 # CREDIT

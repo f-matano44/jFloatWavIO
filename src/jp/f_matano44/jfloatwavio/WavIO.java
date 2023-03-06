@@ -13,6 +13,7 @@ public class WavIO
     // constants
     private static final int intIs4Bytes = 4;
 
+
     // getter
     public AudioFormat getFormat(){ return this.format; }
     public double[][] getX(){ return this.x; }
@@ -28,8 +29,8 @@ public class WavIO
     // constructor (from array)
     public WavIO(final AudioFormat f, double[]... x)
     {
-        this.format = f;
         this.x = x;
+        this.format = f;
     }
 
 
@@ -37,13 +38,16 @@ public class WavIO
     public WavIO(final String FILENAME)
     {
         final File f = new File(FILENAME);
-        int channels = 0;
         byte[] sBytes = null;
         byte[][] sBytesSeparatedByChannels = null;
 
         // import wav file data
         try (final var s = AudioSystem.getAudioInputStream(f))
         {
+            final int channels;
+            final String 
+                exceptionString = "jFloatWavIO is allowed monoral or stereo only..";
+
             sBytes = s.readAllBytes();
             this.format = s.getFormat();
 
@@ -51,8 +55,7 @@ public class WavIO
 
             // reject don't allowed files
             if(channels != 1 && channels != 2)
-                throw new Exception(
-                    "jFloatWavIO is allowed monoral or stereo only..");
+                throw new Exception(exceptionString);
         }
         catch (Exception e)
         {
@@ -61,8 +64,8 @@ public class WavIO
         }
 
         // byte -> double
-        sBytesSeparatedByChannels = separateByChannels(sBytes);
-        this.x = byte2double(sBytesSeparatedByChannels);
+        sBytesSeparatedByChannels = this.separateByChannels(sBytes);
+        this.x = this.byte2double(sBytesSeparatedByChannels);
     }
 
 
@@ -89,8 +92,6 @@ public class WavIO
 
     private double[][] byte2double(final byte[][] bArray)
     {
-        final boolean
-            isBigEndian = this.format.isBigEndian();
         final int
             channels = this.format.getChannels(),
             nBits = this.format.getSampleSizeInBits(),
@@ -111,8 +112,8 @@ public class WavIO
                 if(tPos % nBytes == nBytes - 1)
                 {
                     // preProcess
-                    temp = getBigEndian(temp, isBigEndian);
-                    temp = fillArray(temp, nBytes);
+                    temp = getBigEndian(temp);
+                    temp = fillArray(temp);
                     // byte to int
                     dArray[c][dPos] = (double)ByteBuffer.wrap(temp).getInt();
                     // int to double
@@ -125,28 +126,34 @@ public class WavIO
     }
 
 
-    private byte[] getBigEndian(byte[] array, final boolean isBigEndian)
+    private byte[] getBigEndian(byte[] array)
     {
+        final boolean isBigEndian = this.format.isBigEndian();
+
         if(!isBigEndian)
         {
             final int tail = array.length - 1;
+
             for(int i=0; i<(array.length/2); i++)
             {
-                byte temp;
-                temp = array[i];
+                byte temp = array[i];
                 array[i] = array[tail-i];
                 array[tail-i] = temp;
             }
         }
+
         return array;
     }
 
 
-    private byte[] fillArray(byte[] array, int nBytes)
+    private byte[] fillArray(byte[] array)
     {
         final int 
+            nBits = this.format.getSampleSizeInBits(),
+            nBytes = nBits / 8,
             fillDigit = intIs4Bytes - nBytes,
             fillNum = (array[fillDigit] >> 7) & 1;
+
         for(int i=0; i<fillDigit; i++)
         {
             if(fillNum == 0)
@@ -154,6 +161,7 @@ public class WavIO
             else // fillNum == 1
                 array[i] = -1;
         }
+
         return array;
     }
 
