@@ -8,12 +8,12 @@ public class DrawSignal extends JFrame
     public DrawSignal(String windowTitle, double[]... signal)
     {
         final int 
-            windowWidth = 600,
-            windowHeight = 10 + 190 * signal.length;
+            defaultWidth = 600,
+            defaultHeight = 10 + 190 * signal.length;
         // window setting
         setTitle(windowTitle);
         setBackground(Color.WHITE);
-        setSize(windowWidth, windowHeight);
+        setSize(defaultWidth, defaultHeight);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // add graph panel
         getContentPane().add(this.new PanelClass(signal));
@@ -57,7 +57,6 @@ public class DrawSignal extends JFrame
                 int[][] pos = new int[2][2];
                     pos[xAxis][endPoint] = xOffset;
                     pos[yAxis][endPoint] = yOffset;
-                final double ampSize = -0.9; // -1.0 ~ 0.0
 
                 // draw background
                 g.setColor(Color.LIGHT_GRAY);
@@ -72,8 +71,10 @@ public class DrawSignal extends JFrame
                 {
                     pos[xAxis][startPoint] = pos[xAxis][endPoint];
                     pos[yAxis][startPoint] = pos[yAxis][endPoint];
-                    pos[xAxis][endPoint] = xOffset + (int)(canvasWidth * ((double)j / x[i].length));
-                    pos[yAxis][endPoint] = yOffset + (int)(x[i][j] * canvasHeight * ampSize);
+                    pos[xAxis][endPoint] =
+                        xOffset + (int)(canvasWidth * ((double)j / x[i].length));
+                    pos[yAxis][endPoint] =
+                        yOffset + (int)(x[i][j] * (canvasHeight-(frameWidth*2)));
 
                     g.drawLine(
                         pos[xAxis][startPoint], pos[yAxis][startPoint],

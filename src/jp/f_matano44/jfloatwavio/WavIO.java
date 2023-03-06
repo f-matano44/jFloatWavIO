@@ -75,11 +75,24 @@ public class WavIO
             channels = this.format.getChannels(),
             frameSize = this.format.getFrameSize(),
             sampleSize = frameSize / channels;
+        int[] pos = new int[channels];
         byte[][] sepByte = new byte[channels][byteArray.length/channels];
 
         if(channels == 2)
         {
-
+            for(int i=0; i<byteArray.length; i+=frameSize)
+            {
+                for(int j=0; j<sampleSize; j++)
+                {
+                    sepByte[0][pos[0]] = byteArray[i+j];
+                    pos[0]++;
+                }   
+                for(int j=sampleSize; j<frameSize; j++)
+                {
+                    sepByte[1][pos[1]] = byteArray[i+j];
+                    pos[1]++;
+                }   
+            }
         }
         else // channels == 1
         {
@@ -95,8 +108,8 @@ public class WavIO
         final int
             channels = this.format.getChannels(),
             nBits = this.format.getSampleSizeInBits(),
-            nBytes = nBits / 8,
-            sampleNum = bArray[0].length / nBytes;
+            sampleSize = nBits / 8,
+            sampleNum = bArray[0].length / sampleSize;
         byte[] temp = new byte[intIs4Bytes];
         double[][] dArray = new double[channels][sampleNum];
 
@@ -105,11 +118,11 @@ public class WavIO
             for(int i=0; i<bArray[c].length; i++)
             {
                 final int
-                    tPos = i % nBytes,
-                    dPos = i / nBytes;
+                    tPos = i % sampleSize,
+                    dPos = i / sampleSize;
     
                 temp[tPos] = bArray[c][i];
-                if(tPos % nBytes == nBytes - 1)
+                if(tPos % sampleSize == sampleSize - 1)
                 {
                     // preProcess
                     temp = getBigEndian(temp);
@@ -150,8 +163,8 @@ public class WavIO
     {
         final int 
             nBits = this.format.getSampleSizeInBits(),
-            nBytes = nBits / 8,
-            fillDigit = intIs4Bytes - nBytes,
+            sampleSize = nBits / 8,
+            fillDigit = intIs4Bytes - sampleSize,
             fillNum = (array[fillDigit] >> 7) & 1;
 
         for(int i=0; i<fillDigit; i++)
