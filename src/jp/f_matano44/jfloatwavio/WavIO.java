@@ -25,7 +25,15 @@ public class WavIO
     }
 
 
-    // constructor (input)
+    // constructor (from array)
+    public WavIO(final AudioFormat f, double[]... x)
+    {
+        this.format = f;
+        this.x = x;
+    }
+
+
+    // constructor (from file)
     public WavIO(final String FILENAME)
     {
         final File f = new File(FILENAME);
@@ -58,7 +66,6 @@ public class WavIO
     }
 
 
-    // methods
     private byte[][] separateByChannels(final byte[] byteArray)
     {
         final int
@@ -67,7 +74,15 @@ public class WavIO
             sampleSize = frameSize / channels;
         byte[][] sepByte = new byte[channels][byteArray.length/channels];
 
-        sepByte[0] = byteArray;
+        if(channels == 2)
+        {
+
+        }
+        else // channels == 1
+        {
+            sepByte[0] = byteArray;
+        }
+
         return sepByte;
     }
 
