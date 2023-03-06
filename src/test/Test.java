@@ -4,7 +4,7 @@ public class Test
 {
     public static void main(String[] args)
     {
-        WavIO wav = new WavIO("connect.wav");
+        WavIO wav = new WavIO("helloworld.wav");
         double[][] x = wav.getX();
 
         new DrawSignal("Signal", x);

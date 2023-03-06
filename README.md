@@ -1,11 +1,12 @@
 # jFloatWavIO
+Java package to read/write wav file as float (or double) array.
 
 ## Development environment
 * [Java 17 (LTS)](https://adoptium.net/temurin/releases/?version=17)
 * [ant 1.10](https://ant.apache.org/bindownload.cgi)
 
 ## Build
-Run under command, and then source codes are builded jar file in `bin/`.
+Run under command, and then source codes are builded to jar file in `bin/`.
 ```SH
 jfloatwavio/$ ant
 ```

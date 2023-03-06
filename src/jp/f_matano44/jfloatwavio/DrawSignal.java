@@ -74,7 +74,7 @@ public class DrawSignal extends JFrame
                     pos[xAxis][endPoint] =
                         xOffset + (int)(canvasWidth * ((double)j / x[i].length));
                     pos[yAxis][endPoint] =
-                        yOffset + (int)(x[i][j] * (canvasHeight-(frameWidth*2)));
+                        yOffset + (int)(x[i][j] * (-1)*(canvasHeight-(frameWidth*2)));
 
                     g.drawLine(
                         pos[xAxis][startPoint], pos[yAxis][startPoint],
