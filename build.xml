@@ -18,8 +18,8 @@
 		<echo message="Java version: ${ant.java.version}" />
 		<antcall target="clean" />
 		<antcall target="compile" />
-		<antcall target="filecopy" />
 		<antcall target="makeJar" />
+		<antcall target="buildTest" />
 		<!--<antcall target="makeZip" />-->
 	</target>
 
@@ -33,7 +33,6 @@
 	<target name="compile">
 		<echo message="Compile source files" /> 
 		<mkdir dir="${target}" />
-		<!-- jfloatwavio -->
 		<javac
 			srcdir="${source}/${jfloatwavio}"
 			destdir="${target}"
@@ -44,17 +43,21 @@
 			includeAntRuntime="false"
 			debug="true"
 		/>
-		<!-- test -->
-		<javac
-			srcdir="${source}/test"
-			destdir="${target}"
+	</target>
 
-			encoding="${conf.encoding}"
-			source="${conf.jdk.version}"
-			target="${conf.jre.version}"
-			includeAntRuntime="false"
-			debug="true"
+
+	<target name="makeJar">
+		<echo message="Compress class files to jar" /> 
+		<jar
+			basedir="${target}"
+			destfile="${target}/jfloatwavio.jar"
 		/>
+	</target>
+
+
+	<target name="buildTest">
+		<antcall target="filecopy" />
+		<antcall target="compileTest" />
 	</target>
 
 
@@ -64,11 +67,16 @@
 	</target>
 
 
-	<target name="makeJar">
-		<echo message="Compress class files to jar" /> 
-		<jar
-			basedir="${target}/${jfloatwavio}"
-			destfile="${target}/jfloatwavio.jar"
+	<target name="compileTest">
+		<javac
+			srcdir="${source}/test"
+			destdir="${target}"
+
+			encoding="${conf.encoding}"
+			source="${conf.jdk.version}"
+			target="${conf.jre.version}"
+			includeAntRuntime="false"
+			debug="true"
 		/>
 	</target>
 
