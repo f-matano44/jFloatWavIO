@@ -25,7 +25,7 @@ public class DrawSignal extends JFrame
     private class PanelClass extends JPanel
     {
         private double[][] x;
-        public PanelClass(double[][] signal){ this.x = signal; }
+        public PanelClass(final double[][] signal){ this.x = signal; }
 
         @Override
         public void paint(final Graphics g)

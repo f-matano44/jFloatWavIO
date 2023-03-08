@@ -69,6 +69,13 @@ public class WavIO
     }
 
 
+    // output to wav
+    public void outputData(final String FILENAME)
+    {
+        
+    }
+
+
     private byte[][] separateByChannels(final byte[] byteArray)
     {
         final int
