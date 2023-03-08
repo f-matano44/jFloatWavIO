@@ -69,17 +69,22 @@ public class DrawSignal extends JFrame
                 g.setColor(Color.BLACK);
                 for(int j=0; j<x[i].length; j++)
                 {
+                    final double AMP_MAX = (canvasHeight - (frameWidth*2)) / 2;
+
                     pos[xAxis][startPoint] = pos[xAxis][endPoint];
                     pos[yAxis][startPoint] = pos[yAxis][endPoint];
                     pos[xAxis][endPoint] =
-                        xOffset + (int)(canvasWidth * ((double)j / x[i].length));
+                        xOffset + (int)(canvasWidth * ((double)j / (x[i].length-1)));
                     pos[yAxis][endPoint] =
-                        yOffset + (int)(x[i][j] * (-1)*(canvasHeight-(frameWidth*2)));
+                        yOffset + (int)((-1) * x[i][j] * AMP_MAX);
 
-                    g.drawLine(
-                        pos[xAxis][startPoint], pos[yAxis][startPoint],
-                        pos[xAxis][endPoint], pos[yAxis][endPoint]
-                    );
+                    if(0 < AMP_MAX)
+                    {
+                        g.drawLine(
+                            pos[xAxis][startPoint], pos[yAxis][startPoint],
+                            pos[xAxis][endPoint], pos[yAxis][endPoint]
+                        );
+                    }
                 }
             }
         }

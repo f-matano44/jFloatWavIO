@@ -112,7 +112,7 @@ public class WavIO
 
     private double[][] byte2double(final byte[][] bArray)
     {
-        final int
+        final int SIGN = 1,
             channels = this.format.getChannels(),
             nBits = this.format.getSampleSizeInBits(),
             sampleSize = nBits / 8,
@@ -137,7 +137,7 @@ public class WavIO
                     // byte to int
                     dArray[c][dPos] = (double)ByteBuffer.wrap(temp).getInt();
                     // int to double
-                    dArray[c][dPos] = (double)dArray[c][dPos] / Math.pow(2, nBits);
+                    dArray[c][dPos] = (double)dArray[c][dPos] / Math.pow(2, nBits - SIGN);
                 }
             }
         }
