@@ -19,7 +19,8 @@
 		<antcall target="clean" />
 		<antcall target="compile" />
 		<antcall target="makeJar" />
-		<antcall target="buildTest" />
+		<antcall target="buildTestCode" />
+		<!--<antcall target="filecopy" />-->
 		<!--<antcall target="makeZip" />-->
 	</target>
 
@@ -55,19 +56,8 @@
 	</target>
 
 
-	<target name="buildTest">
-		<antcall target="filecopy" />
-		<antcall target="compileTest" />
-	</target>
-
-
-	<target name="filecopy"> 
-		<echo message="Copy other files" />
+	<target name="buildTestCode">
 		<copy file="src/test/helloworld.wav" tofile="${target}/helloworld.wav"/>
-	</target>
-
-
-	<target name="compileTest">
 		<javac
 			srcdir="${source}/test"
 			destdir="${target}"
@@ -78,6 +68,11 @@
 			includeAntRuntime="false"
 			debug="true"
 		/>
+	</target>
+
+
+	<target name="filecopy"> 
+		<echo message="Nothing to do." />
 	</target>
 
 
