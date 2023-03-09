@@ -9,4 +9,5 @@
 
 # exclude gitignore
 !/**/.gitkeep
-!/**/helloworld.wav
+!/**/zundamon.wav
+!/**/metan.wav

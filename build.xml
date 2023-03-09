@@ -57,7 +57,8 @@
 
 
 	<target name="buildTestCode">
-		<copy file="src/test/helloworld.wav" tofile="${target}/helloworld.wav"/>
+		<copy file="src/test/zundamon.wav" tofile="${target}/zundamon.wav"/>
+		<copy file="src/test/metan.wav" tofile="${target}/metan.wav"/>
 		<javac
 			srcdir="${source}/test"
 			destdir="${target}"

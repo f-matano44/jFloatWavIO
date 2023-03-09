@@ -31,8 +31,10 @@ jfloatwavio/bin/$ java -cp "jfloatwavio.jar:" Test
 ```
 
 # CREDIT
-This file isn't licensed under MPL 2.0.
-* `src/test/helloworld.wav`: VOICEVOX:ずんだもん
+These files aren't licensed under MPL 2.0.<br>
+[Please read this page.](https://zunko.jp/con_ongen_kiyaku.html)
+* `src/test/zundamon.wav`: VOICEVOX:ずんだもん
+* `src/test/metan.wav`: VOICEVOX:四国めたん
 
 # COPYRIGHT
 Copyright 2023 Fumiyoshi MATANO<br>

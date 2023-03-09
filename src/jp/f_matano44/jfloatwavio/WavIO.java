@@ -26,42 +26,42 @@ public class WavIO
     }
 
 
+    // -----------------------------------------------------------------------
     // constructor (from array)
-    public WavIO(final AudioFormat f, double[]... x)
+    public WavIO(final AudioFormat f, double[]... x) throws Exception
     {
+        final String exceptionString = 
+        "\njFloatWavIO can't read this signal." +
+        "\nPlease check for AudioFormat..";
+
         this.x = x;
         this.format = f;
+
+        // reject don't allowed files
+        if(!isFormatOK(this.format))
+            throw new Exception(exceptionString);
     }
 
 
     // constructor (from file)
-    public WavIO(final String FILENAME)
+    public WavIO(final String FILENAME) throws Exception
     {
         final File f = new File(FILENAME);
         byte[] sBytes = null;
         byte[][] sBytesSeparatedByChannels = null;
 
         // import wav file data
-        try (final var s = AudioSystem.getAudioInputStream(f))
-        {
-            final int channels;
-            final String 
-                exceptionString = "jFloatWavIO is allowed monoral or stereo only..";
+        final var s = AudioSystem.getAudioInputStream(f);
+        final String exceptionString = 
+            "\njFloatWavIO can't open this file." +
+            "\nPlease check for file format..";
 
-            sBytes = s.readAllBytes();
-            this.format = s.getFormat();
+        sBytes = s.readAllBytes();
+        this.format = s.getFormat();
 
-            channels = this.format.getChannels();
-
-            // reject don't allowed files
-            if(channels != 1 && channels != 2)
-                throw new Exception(exceptionString);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            System.exit(1);
-        }
+        // reject don't allowed files
+        if(!isFormatOK(this.format))
+            throw new Exception(exceptionString);
 
         // byte -> double
         sBytesSeparatedByChannels = this.separateByChannels(sBytes);
@@ -69,10 +69,22 @@ public class WavIO
     }
 
 
-    // output to wav
-    public void outputData(final String FILENAME)
+    // -----------------------------------------------------------------------
+    private boolean isFormatOK(AudioFormat f)
     {
-        
+        final int channels, nBits;
+
+        channels = f.getChannels();
+        nBits = f.getSampleSizeInBits();
+
+        if(
+            f.getEncoding() == AudioFormat.Encoding.PCM_SIGNED &&
+            (channels == 1 || channels == 2) &&
+            (nBits == 8 || nBits == 16 || nBits == 24 || nBits == 32)
+        )
+            return true;
+        else
+            return false;
     }
 
 
@@ -132,8 +144,8 @@ public class WavIO
                 if(tPos % sampleSize == sampleSize - 1)
                 {
                     // preProcess
-                    temp = getBigEndian(temp);
-                    temp = fillArray(temp);
+                    temp = this.getBigEndian(temp);
+                    temp = this.fillArray(temp);
                     // byte to int
                     dArray[c][dPos] = (double)ByteBuffer.wrap(temp).getInt();
                     // int to double
@@ -186,6 +198,18 @@ public class WavIO
     }
 
 
+    // -----------------------------------------------------------------------
+    // output to wav
+    public void outputData(final String FILENAME)
+    {
+        // double -> int
+        // int -> byte array
+        // connect byte array
+        // output
+    }
+
+
+    // -----------------------------------------------------------------------
     public void printAudioFormat()
     {
         System.out.println("Encoding: " + this.format.getEncoding());
