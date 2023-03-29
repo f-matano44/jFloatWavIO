@@ -2,6 +2,8 @@ package jp.f_matano44.jfloatwavio;
 
 import java.io.*;
 import java.nio.*;
+import java.util.Arrays;
+
 import javax.sound.sampled.*;
 
 
@@ -28,13 +30,27 @@ public class WavIO
 
     // -----------------------------------------------------------------------
     // constructor (from array)
-    public WavIO(final AudioFormat f, double[]... x) throws Exception
+    public WavIO(final AudioFormat f, double[]... signal) throws Exception
     {
         final String exceptionString = 
         "\njFloatWavIO can't read this signal." +
         "\nPlease check for AudioFormat..";
 
-        this.x = x;
+        int arrayLength = 0, channels = f.getChannels();
+
+        // determine array length
+        if(channels == 2 && (signal[0].length < signal[1].length)){
+            arrayLength = signal[1].length;
+        }
+        else{ 
+            arrayLength = signal[0].length;
+        }
+
+        // copy to member variable
+        this.x = new double[channels][arrayLength];
+        for(int i=0; i<channels; i++)
+            for(int j=0; j<signal[i].length; j++)
+                this.x[i][j] = signal[i][j];
         this.format = f;
 
         // reject don't allowed files
@@ -200,14 +216,81 @@ public class WavIO
 
     // -----------------------------------------------------------------------
     // output to wav
-    public void outputData(final String FILENAME)
+    public void outputData(final String FILENAME) throws IOException
     {
-        // double -> int
-        // int -> byte array
-        // connect byte array
-        // output
-    }
+        final int SIGN = 1,
+            channels = this.format.getChannels(),
+            nBits = this.format.getSampleSizeInBits(),
+            sampleSize = nBits / 8,
+            doubleArrayLength = this.x[0].length;
+        int connectPos;
+        InputStream is;
+        AudioInputStream ais;
+        byte[] conBytes = new byte[channels * doubleArrayLength * sampleSize];
+        byte[][]
+            notConBytes = new byte[channels][doubleArrayLength * sampleSize];
 
+        // double -> int
+        for(int i=0; i<channels; i++)
+        {
+            for(int j=0; j<doubleArrayLength; j++)
+            {
+                this.x[i][j] = this.x[i][j] * Math.pow(2, nBits-SIGN);
+            }
+        }
+
+        // int -> byte array
+        for(int i=0; i<channels; i++)
+        {
+            int bytePos = 0;
+            for(int j=0; j<doubleArrayLength; j++)
+            {
+                byte[] 
+                    intToByte = 
+                    ByteBuffer.allocate(4).putInt((int)this.x[i][j]).array(),
+                    buf = Arrays.copyOfRange(intToByte, 4-sampleSize, 4);
+                    
+                
+                // if wanted little endian, convert to it.
+                if(!this.format.isBigEndian())
+                {
+                    final int tail = sampleSize - 1;
+                    for(int k=0; k<(sampleSize/2); k++)
+                    {
+                        final byte temp = buf[k];
+                        buf[k] = buf[tail-k];
+                        buf[tail-k] = temp;
+                    }
+                }
+                
+                // insert byte array
+                for(int k=0; k<buf.length; k++)
+                {
+                    notConBytes[i][bytePos] = buf[k];
+                    bytePos++;
+                }
+            }
+        }
+
+        // connect byte array
+        connectPos = 0;
+        for(int i=0; i<doubleArrayLength; i+=sampleSize)
+        {
+            for(int j=0; j<channels; j++)
+            {
+                for(int k=0; k<sampleSize;k++)
+                {
+                    conBytes[connectPos] = notConBytes[j][(i*sampleSize)+k];
+                    connectPos++;
+                }
+            }
+        }
+
+        // output
+        is = new ByteArrayInputStream(conBytes); 
+        ais = new AudioInputStream(is, format, conBytes.length);
+        AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(FILENAME));
+    }
 
     // -----------------------------------------------------------------------
     public void printAudioFormat()

@@ -1,6 +1,8 @@
-import javax.sound.sampled.AudioFormat;
-
 import jp.f_matano44.jfloatwavio.*;
+
+import java.io.IOException;
+
+import javax.sound.sampled.AudioFormat;
 
 public class Test
 {
@@ -10,8 +12,8 @@ public class Test
         WavIO input1=null, input2=null, output=null;
         double[] x, y;
 
-        // input wav file
-        // WavIO wavIO_Obj = new WavIO(String FILENAME);
+        /* input wav file */
+        // WavIO WavIO_Obj = new WavIO(String FILENAME);
         try{
             input1 = new WavIO("zundamon.wav");
             input2 = new WavIO("metan.wav");
@@ -21,13 +23,13 @@ public class Test
         }
 
 
-        // get double array
+        /* get double array */
         // double[] signal = wavIO_Obj.getX();
         // float[]  signal = wavIO_Obj.getXf();
         x = input1.getX()[0];
         y = input2.getX()[0];
 
-        // draw original waveform
+        /* draw original waveform */
         // new DrawSignal(String WindowTitle, double[]... signal);
         new DrawSignal("inputSignal 1", x);
         new DrawSignal("inputSignal 2", y);
@@ -39,9 +41,12 @@ public class Test
             inputFormat.getSampleSizeInBits(), 2, inputFormat.getFrameSize()*2,
             inputFormat.getFrameRate(), false
         );
-        // WavIO object can be generated from signal.
-        // WavIO fromSignal = new WavIO(AudioFormat format, double[]... signal);
-        // If not supported format, throws Exception
+        /* 
+         * WavIO object can be generated from signal. 
+         * If not supported format, throws Exception.
+         * This call requires that the arrays of argument are same length.
+         */
+        // WavIO WavIO_Obj = new WavIO(AudioFormat format, double[]... signal);
         try{
             output = new WavIO(outputFormat, x, y);
         }catch(Exception e){
@@ -50,12 +55,20 @@ public class Test
         }
 
         // draw connected waveform
-        new DrawSignal("outputSignal", output.getX());
-        // print format
+        new DrawSignal("outputSignal", x, y);
+
+        /* print format */
+        // WavIO_Obj.printAudioFormat();
         output.printAudioFormat();
 
-        // output wav file
+        /* output wav file */
         // wavIO_Obj.outputData(String FILENAME);
-        output.outputData("helloworld.wav");
+        try{
+            input1.outputData("test1.wav");
+            output.outputData("helloworld.wav");
+        }catch(IOException e){
+            e.printStackTrace();
+            System.out.println("Failed of writing file.");
+        }
     }
 }
