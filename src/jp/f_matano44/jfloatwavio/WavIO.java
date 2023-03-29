@@ -46,7 +46,7 @@ public class WavIO
             arrayLength = signal[0].length;
         }
 
-        // copy to member variable
+        // copy member variable
         this.x = new double[channels][arrayLength];
         for(int i=0; i<channels; i++)
             for(int j=0; j<signal[i].length; j++)
@@ -54,7 +54,7 @@ public class WavIO
         this.format = f;
 
         // reject don't allowed files
-        if(!isFormatOK(this.format))
+        if(!isFormatOK(this.format) || signal.length != this.format.getChannels())
             throw new Exception(exceptionString);
     }
 
@@ -270,22 +270,22 @@ public class WavIO
             }
         }
 
-        // connect byte array (ここがおかしい)
+        // connect byte array
         connectPos = 0;
-        for(int i=0; i<doubleArrayLength; i+=sampleSize)
+        for(int i=0; i<doubleArrayLength*sampleSize; i+=sampleSize)
         {
             for(int j=0; j<channels; j++)
             {
                 for(int k=0; k<sampleSize; k++)
                 {
-                    conBytes[connectPos] = notConBytes[j][(i*sampleSize)+k];
+                    conBytes[connectPos] = notConBytes[j][i+k];
                     connectPos++;
                 }
             }
         }
 
         // output
-        is = new ByteArrayInputStream(notConBytes[0]); 
+        is = new ByteArrayInputStream(conBytes); 
         ais = new AudioInputStream(is, this.format, conBytes.length);
         AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(FILENAME));
     }

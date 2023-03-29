@@ -9,7 +9,7 @@ public class DrawSignal extends JFrame
     {
         final int 
             defaultWidth = 600,
-            defaultHeight = 10 + 190 * signal.length;
+            defaultHeight = 40 + 160 * signal.length;
         // window setting
         setTitle(windowTitle);
         setBackground(Color.WHITE);

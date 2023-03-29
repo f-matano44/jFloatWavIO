@@ -1,8 +1,6 @@
-import jp.f_matano44.jfloatwavio.*;
-
 import java.io.IOException;
-
 import javax.sound.sampled.AudioFormat;
+import jp.f_matano44.jfloatwavio.*;
 
 public class Test
 {
@@ -39,7 +37,7 @@ public class Test
         y = input2.getX()[0];
 
 
-        // connect input files
+        // set format
         inputFormat = input1.getFormat();
         outputFormat = new AudioFormat(
             AudioFormat.Encoding.PCM_SIGNED, inputFormat.getSampleRate(),
@@ -72,7 +70,7 @@ public class Test
          */
         // draw original waveform
         new DrawSignal("inputSignal 1", x);
-        new DrawSignal("inputSignal 2", y);
+        new DrawSignal("inputSignal 2", y, y, y);
         // draw connected waveform
         new DrawSignal("outputSignal", output.getX());
 
