@@ -59,7 +59,7 @@ public class Test
 
         /* print format */
         // WavIO_Obj.printAudioFormat();
-        output.printAudioFormat();
+        //output.printAudioFormat();
 
         /* output wav file */
         // wavIO_Obj.outputData(String FILENAME);

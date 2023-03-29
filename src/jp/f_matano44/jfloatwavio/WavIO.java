@@ -249,7 +249,6 @@ public class WavIO
                     intToByte = 
                     ByteBuffer.allocate(4).putInt((int)this.x[i][j]).array(),
                     buf = Arrays.copyOfRange(intToByte, 4-sampleSize, 4);
-                    
                 
                 // if wanted little endian, convert to it.
                 if(!this.format.isBigEndian())
@@ -278,7 +277,7 @@ public class WavIO
         {
             for(int j=0; j<channels; j++)
             {
-                for(int k=0; k<sampleSize;k++)
+                for(int k=0; k<sampleSize; k++)
                 {
                     conBytes[connectPos] = notConBytes[j][(i*sampleSize)+k];
                     connectPos++;
@@ -288,7 +287,7 @@ public class WavIO
 
         // output
         is = new ByteArrayInputStream(conBytes); 
-        ais = new AudioInputStream(is, format, conBytes.length);
+        ais = new AudioInputStream(is, this.format, conBytes.length);
         AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(FILENAME));
     }
 
