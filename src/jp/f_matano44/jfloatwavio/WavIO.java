@@ -74,6 +74,7 @@ public class WavIO
 
         sBytes = s.readAllBytes();
         this.format = s.getFormat();
+        System.out.println(sBytes.length);
 
         // reject don't allowed files
         if(!isFormatOK(this.format))
@@ -82,6 +83,7 @@ public class WavIO
         // byte -> double
         sBytesSeparatedByChannels = this.separateByChannels(sBytes);
         this.x = this.byte2double(sBytesSeparatedByChannels);
+        System.out.println(this.x[0].length);
     }
 
 
@@ -226,18 +228,15 @@ public class WavIO
         int connectPos;
         InputStream is;
         AudioInputStream ais;
+        int[][] intSignal = new int[channels][doubleArrayLength];
         byte[] conBytes = new byte[channels * doubleArrayLength * sampleSize];
         byte[][]
             notConBytes = new byte[channels][doubleArrayLength * sampleSize];
 
         // double -> int
         for(int i=0; i<channels; i++)
-        {
             for(int j=0; j<doubleArrayLength; j++)
-            {
-                this.x[i][j] = this.x[i][j] * Math.pow(2, nBits-SIGN);
-            }
-        }
+                intSignal[i][j] = (int)(this.x[i][j] * Math.pow(2, nBits-SIGN));
 
         // int -> byte array
         for(int i=0; i<channels; i++)
@@ -246,9 +245,9 @@ public class WavIO
             for(int j=0; j<doubleArrayLength; j++)
             {
                 byte[] 
-                    intToByte = 
-                    ByteBuffer.allocate(4).putInt((int)this.x[i][j]).array(),
-                    buf = Arrays.copyOfRange(intToByte, 4-sampleSize, 4);
+                intToByte = 
+                    ByteBuffer.allocate(4).putInt(intSignal[i][j]).array(),
+                buf = Arrays.copyOfRange(intToByte, 4-sampleSize, 4);
                 
                 // if wanted little endian, convert to it.
                 if(!this.format.isBigEndian())
@@ -271,7 +270,7 @@ public class WavIO
             }
         }
 
-        // connect byte array
+        // connect byte array (ここがおかしい)
         connectPos = 0;
         for(int i=0; i<doubleArrayLength; i+=sampleSize)
         {
@@ -286,10 +285,11 @@ public class WavIO
         }
 
         // output
-        is = new ByteArrayInputStream(conBytes); 
+        is = new ByteArrayInputStream(notConBytes[0]); 
         ais = new AudioInputStream(is, this.format, conBytes.length);
         AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(FILENAME));
     }
+
 
     // -----------------------------------------------------------------------
     public void printAudioFormat()
