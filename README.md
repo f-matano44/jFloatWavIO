@@ -1,4 +1,5 @@
 # jFloatWavIO
+[![Latest Release](https://gitlab.com/f-matano44/jfloatwavio/-/badges/release.svg)](https://gitlab.com/f-matano44/jfloatwavio/-/releases)  
 Java package to read/write wav file as float (or double) array.
 
 ## Development environment
