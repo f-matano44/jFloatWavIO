@@ -70,7 +70,7 @@ public class Test
          */
         // draw original waveform
         new DrawSignal("inputSignal 1", x);
-        new DrawSignal("inputSignal 2", y, y, y);
+        new DrawSignal("inputSignal 2", y);
         // draw connected waveform
         new DrawSignal("outputSignal", output.getX());
 
