@@ -74,7 +74,6 @@ public class WavIO
 
         sBytes = s.readAllBytes();
         this.format = s.getFormat();
-        System.out.println(sBytes.length);
 
         // reject don't allowed files
         if(!isFormatOK(this.format))
@@ -83,7 +82,6 @@ public class WavIO
         // byte -> double
         sBytesSeparatedByChannels = this.separateByChannels(sBytes);
         this.x = this.byte2double(sBytesSeparatedByChannels);
-        System.out.println(this.x[0].length);
     }
 
 
