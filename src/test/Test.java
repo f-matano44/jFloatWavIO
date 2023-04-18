@@ -63,7 +63,7 @@ public class Test
 
 
         /* 
-         * draw original waveform 
+         * draw waveform 
          * 
          * usage
          *  new DrawSignal(String WindowTitle, double[]... signal);
