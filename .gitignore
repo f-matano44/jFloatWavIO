@@ -1,5 +1,6 @@
 # directory
 /bin
+/build
 /.vscode
 
 # file extention
@@ -7,7 +8,7 @@
 
 # specific dirs/files
 
-# exclude gitignore
+# exclude files
 !/**/.gitkeep
 !/**/zundamon.wav
 !/**/metan.wav

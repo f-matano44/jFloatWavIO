@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <project name="jfloatwavio" default="default" basedir=".">
+    <property name="version" value="1.0.0" />
 
     <!-- configuration -->
     <property name="conf.encoding" value="UTF-8" />
     <property name="conf.jdk.version" value="17" />
     <property name="conf.jre.version" value="17" />
     <!-- variables -->
-    <property name="target" value="bin" />
+    <property name="target" value="build" />
     <property name="source" value="src" />
+    <property name="test"   value="test" />
     <property name="jfloatwavio" value="jp/f_matano44/jfloatwavio" />
+    <property name="jarname" value="jFloatWavIO_${version}.jar" />
 
 
     <!-- functions -->
@@ -51,16 +54,16 @@
         <echo message="Compress class files to jar" /> 
         <jar
             basedir="${target}"
-            destfile="${target}/jfloatwavio.jar"
+            destfile="${target}/${jarname}"
         />
     </target>
 
 
     <target name="buildTestCode">
-        <copy file="src/test/zundamon.wav" tofile="${target}/zundamon.wav"/>
-        <copy file="src/test/metan.wav" tofile="${target}/metan.wav"/>
+        <copy file="${test}/zundamon.wav" tofile="${target}/zundamon.wav"/>
+        <copy file="${test}/metan.wav" tofile="${target}/metan.wav"/>
         <javac
-            srcdir="${source}/test"
+            srcdir="${test}"
             destdir="${target}"
 
             encoding="${conf.encoding}"

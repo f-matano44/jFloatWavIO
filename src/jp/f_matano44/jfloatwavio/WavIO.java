@@ -9,21 +9,78 @@ import javax.sound.sampled.*;
 
 public class WavIO
 {
+    /**
+     * @param FILENAME filename
+     * @return double[][]
+     */
+    public static double[][] sGetSignal(final String FILENAME) {
+        try {
+            WavIO wav = new WavIO(FILENAME);
+            return wav.getSignal();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    /**
+     * @param FILENAME filename
+     * @return AudioFormat
+     */
+    public static AudioFormat sGetFormat(final String FILENAME) {
+        try {
+            WavIO wav = new WavIO(FILENAME);
+            return wav.getFormat();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    /**
+     * @param FILENAME file name
+     * @param nbits bit depth
+     * @param fs sampling rate
+     * @param signal signal data
+     */
+    public static int sOutputData(
+        final String FILENAME, final int nbits, final double fs,
+        final double[]... signal
+    ) {
+        // set format
+        final int channels = signal.length;
+        final int frameSize = (nbits / 8) * channels;
+        AudioFormat outputFormat = new AudioFormat(
+            AudioFormat.Encoding.PCM_SIGNED, (float) fs, nbits, channels, 
+            frameSize, (float) fs, false
+        );
+
+        try{
+            WavIO output = new WavIO(outputFormat, signal);
+            output.outputData(FILENAME);
+        }catch(Exception e){
+            return -1;
+        }
+
+        return 0;
+    }
+
+
     // member variables
     private AudioFormat format;
-    private double[][] x; // signal data
+    private double[][] signal;
     // constants
     private static final int intIs4Bytes = 4;
 
 
     // getter
     public AudioFormat getFormat(){ return this.format; }
-    public double[][] getX(){ return this.x; }
-    public float[][] getXf(){
-        float[][] xf = new float[this.x.length][this.x[0].length];
-        for(int i=0; i<this.x.length; i++)
-            for(int j=0; j<this.x[i].length; j++)
-                xf[i][j] = (float)this.x[i][j];
+    public double[][] getSignal(){ return this.signal; }
+    public float[][] getFloatSignal(){
+        float[][] xf = new float[this.signal.length][this.signal[0].length];
+        for(int i=0; i<this.signal.length; i++)
+            for(int j=0; j<this.signal[i].length; j++)
+                xf[i][j] = (float)this.signal[i][j];
         return xf;
     }
 
@@ -47,10 +104,10 @@ public class WavIO
         }
 
         // copy member variable
-        this.x = new double[channels][arrayLength];
+        this.signal = new double[channels][arrayLength];
         for(int i=0; i<channels; i++)
             for(int j=0; j<signal[i].length; j++)
-                this.x[i][j] = signal[i][j];
+                this.signal[i][j] = signal[i][j];
         this.format = f;
 
         // reject don't allowed files
@@ -81,7 +138,7 @@ public class WavIO
 
         // byte -> double
         sBytesSeparatedByChannels = this.separateByChannels(sBytes);
-        this.x = this.byte2double(sBytesSeparatedByChannels);
+        this.signal = this.byte2double(sBytesSeparatedByChannels);
     }
 
 
@@ -222,7 +279,7 @@ public class WavIO
             channels = this.format.getChannels(),
             nBits = this.format.getSampleSizeInBits(),
             sampleSize = nBits / 8,
-            doubleArrayLength = this.x[0].length;
+            doubleArrayLength = this.signal[0].length;
         int connectPos;
         InputStream is;
         AudioInputStream ais;
@@ -234,7 +291,7 @@ public class WavIO
         // double -> int
         for(int i=0; i<channels; i++)
             for(int j=0; j<doubleArrayLength; j++)
-                intSignal[i][j] = (int)(this.x[i][j] * Math.pow(2, nBits-SIGN));
+                intSignal[i][j] = (int)(this.signal[i][j] * Math.pow(2, nBits-SIGN));
 
         // int -> byte array
         for(int i=0; i<channels; i++)
