@@ -1,12 +1,12 @@
 import java.io.IOException;
 import javax.sound.sampled.AudioFormat;
-import jp.f_matano44.jfloatwavio.*;
+import jp.f_matano44.jfloatwavio.WavIO;
 
 public class Test
 {
     public static void main(String[] args)
     {
-        AudioFormat inputFormat, outputFormat;
+        AudioFormat input1Format, outputFormat;
         WavIO input1=null, input2=null, output=null;
         double[] x, y;
 
@@ -19,7 +19,6 @@ public class Test
          */
         try{
             input1 = new WavIO("zundamon.wav");
-            input2 = new WavIO("metan.wav");
         }catch(Exception e){
             e.printStackTrace();
             System.exit(1);
@@ -30,19 +29,36 @@ public class Test
          * get double array 
          * 
          * usage
-         *  double[] signal = wavIO_Obj.getX();
-         *  float[]  signal = wavIO_Obj.getXf();
+         *  double[][]  signal = wavIO_Obj.getSignal();
+         *  float[][]   signal = wavIO_Obj.getFloatSignal();
+         * 
+         * usage (static method)
+         *  double[][]  signal = wavIO_Obj.getSignal();
+         *  float[][]   signal = wavIO_Obj.getFloatSignal();
          */
-        x = input1.getX()[0];
-        y = input2.getX()[0];
+        x = input1.getSignal()[0];
+        y = WavIO.staticGetSignal("metan.wav")[0];
+
+        /*
+         * get format
+         */
+        input1Format = input1.getFormat();
+        final float fs = input1Format.getSampleRate();
+        final int nbits = input1Format.getSampleSizeInBits();
+        final int frameSize = input1Format.getFrameSize();
+        final float frameRate = input1Format.getFrameRate();
 
 
         // set format
-        inputFormat = input1.getFormat();
+        final int outputChannels = 2;
+        final float outputFs = fs;
+        final int outputNbits = nbits;
+        final int outputFrameSize = frameSize * outputChannels;
+        final float outputframeRate = frameRate;
+        final boolean bigEndian = false;
         outputFormat = new AudioFormat(
-            AudioFormat.Encoding.PCM_SIGNED, inputFormat.getSampleRate(),
-            inputFormat.getSampleSizeInBits(), 2, inputFormat.getFrameSize()*2,
-            inputFormat.getFrameRate(), false
+            AudioFormat.Encoding.PCM_SIGNED, outputFs, outputNbits, outputChannels,
+            outputFrameSize, outputframeRate, bigEndian
         );
 
 
@@ -63,19 +79,6 @@ public class Test
 
 
         /* 
-         * draw waveform 
-         * 
-         * usage
-         *  new DrawSignal(String WindowTitle, double[]... signal);
-         */
-        // draw original waveform
-        new DrawSignal("inputSignal 1", x);
-        new DrawSignal("inputSignal 2", y);
-        // draw connected waveform
-        new DrawSignal("outputSignal", output.getX());
-
-
-        /* 
          * print format info
          * 
          * usage
@@ -88,9 +91,11 @@ public class Test
          *
          * usage
          *  wavIO_Obj.outputData(String FILENAME);
+         * 
+         * usage (static method)
+         *  WavIO.outputData(String FILENAME, int nbits, double fs, double[]... signal);
         */
         try{
-            input1.outputData("test1.wav");
             output.outputData("helloworld.wav");
         }catch(IOException e){
             e.printStackTrace();
