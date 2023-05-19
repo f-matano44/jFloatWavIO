@@ -37,7 +37,7 @@ class Main {
         final double fs = 16000.0;  // sampling rate
         // Output Signal
         // success: 0
-        // failed:  -1
+        // failure: -1
         int result = sOutputData("path/to/output.wav", nbits, fs, signal);
     }
 }

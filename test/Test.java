@@ -92,7 +92,8 @@ public class Test {
          *      signal[1]: right
         */
         try {
-            output.outputData("helloworld.wav");
+            output.outputData("output01.wav");
+            WavIO.sOutputData("output02.wav", outputNbits, outputFs, x, y);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Failed of writing file.");

@@ -1,3 +1,7 @@
+1.0.1
+bug fix
+Added 'sOutputData()' examples to Test.java
+
 1.0.0
 Delete "DrawSignal" method
 add static method
