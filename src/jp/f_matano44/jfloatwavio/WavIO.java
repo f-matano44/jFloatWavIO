@@ -12,9 +12,8 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-
-public class WavIO
-{
+/** Java library for wav file as float. */
+public class WavIO {
     /**
      * @param FILENAME filename
      * @return double[][]

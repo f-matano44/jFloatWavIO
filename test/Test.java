@@ -2,29 +2,27 @@ import java.io.IOException;
 import javax.sound.sampled.AudioFormat;
 import jp.f_matano44.jfloatwavio.WavIO;
 
-public class Test
-{
-    public static void main(String[] args)
-    {
-        AudioFormat input1Format, outputFormat;
-        WavIO input1=null, output=null;
-        double[] x, y;
-
+/** test program. */
+public class Test {
+    /** main method of test program. */
+    public static void main(String[] args) {
+        WavIO input1 = null;
+        WavIO output = null;
 
         /* 
          * input wav file 
          * usage: WavIO WavIO_Obj = new WavIO(String FILENAME);
          */
-        try{
+        try {
             input1 = new WavIO("zundamon.wav");
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
 
 
         // get format
-        input1Format = input1.getFormat();
+        final AudioFormat input1Format = input1.getFormat();
         final float fs = input1Format.getSampleRate();
         final int nbits = input1Format.getSampleSizeInBits();
         final int frameSize = input1Format.getFrameSize();
@@ -42,8 +40,8 @@ public class Test
          *  double[][]  signal = wavIO_Obj.getSignal();
          *  float[][]   signal = wavIO_Obj.getFloatSignal();
          */
-        x = input1.getSignal()[0];
-        y = WavIO.sGetSignal("metan.wav")[0];
+        final double[] x = input1.getSignal()[0];
+        final double[] y = WavIO.sGetSignal("metan.wav")[0];
 
 
         // set format
@@ -53,7 +51,7 @@ public class Test
         final int outputFrameSize = frameSize * outputChannels;
         final float outputframeRate = frameRate;
         final boolean bigEndian = false;
-        outputFormat = new AudioFormat(
+        final AudioFormat outputFormat = new AudioFormat(
             AudioFormat.Encoding.PCM_SIGNED, outputFs, outputNbits, outputChannels,
             outputFrameSize, outputframeRate, bigEndian
         );
@@ -67,9 +65,9 @@ public class Test
          * usage
          *  WavIO WavIO_Obj = new WavIO(AudioFormat format, double[]... signal);
          */
-        try{
+        try {
             output = new WavIO(outputFormat, x, y);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
@@ -93,9 +91,9 @@ public class Test
          *      signal[0]: left
          *      signal[1]: right
         */
-        try{
+        try {
             output.outputData("helloworld.wav");
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Failed of writing file.");
         }
