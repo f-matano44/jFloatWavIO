@@ -13,7 +13,7 @@ public class WavIO
      * @param FILENAME filename
      * @return double[][]
      */
-    public static double[][] staticGetSignal(final String FILENAME) {
+    public static double[][] sGetSignal(final String FILENAME) {
         try {
             WavIO wav = new WavIO(FILENAME);
             return wav.getSignal();
@@ -27,7 +27,7 @@ public class WavIO
      * @param FILENAME filename
      * @return AudioFormat
      */
-    public static AudioFormat staticGetFormat(final String FILENAME) {
+    public static AudioFormat sGetFormat(final String FILENAME) {
         try {
             WavIO wav = new WavIO(FILENAME);
             return wav.getFormat();
@@ -43,7 +43,7 @@ public class WavIO
      * @param fs sampling rate
      * @param signal signal data
      */
-    public static void staticOutputData(
+    public static int sOutputData(
         final String FILENAME, final int nbits, final double fs,
         final double[]... signal
     ) {
@@ -59,9 +59,10 @@ public class WavIO
             WavIO output = new WavIO(outputFormat, signal);
             output.outputData(FILENAME);
         }catch(Exception e){
-            System.out.println("Failed of writing file.");
-            e.printStackTrace();
+            return -1;
         }
+
+        return 0;
     }
 
 

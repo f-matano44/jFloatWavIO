@@ -7,15 +7,13 @@ public class Test
     public static void main(String[] args)
     {
         AudioFormat input1Format, outputFormat;
-        WavIO input1=null, input2=null, output=null;
+        WavIO input1=null, output=null;
         double[] x, y;
 
 
         /* 
          * input wav file 
-         * 
-         * usage
-         *  WavIO WavIO_Obj = new WavIO(String FILENAME);
+         * usage: WavIO WavIO_Obj = new WavIO(String FILENAME);
          */
         try{
             input1 = new WavIO("zundamon.wav");
@@ -23,6 +21,14 @@ public class Test
             e.printStackTrace();
             System.exit(1);
         }
+
+
+        // get format
+        input1Format = input1.getFormat();
+        final float fs = input1Format.getSampleRate();
+        final int nbits = input1Format.getSampleSizeInBits();
+        final int frameSize = input1Format.getFrameSize();
+        final float frameRate = input1Format.getFrameRate();
 
 
         /* 
@@ -37,16 +43,7 @@ public class Test
          *  float[][]   signal = wavIO_Obj.getFloatSignal();
          */
         x = input1.getSignal()[0];
-        y = WavIO.staticGetSignal("metan.wav")[0];
-
-        /*
-         * get format
-         */
-        input1Format = input1.getFormat();
-        final float fs = input1Format.getSampleRate();
-        final int nbits = input1Format.getSampleSizeInBits();
-        final int frameSize = input1Format.getFrameSize();
-        final float frameRate = input1Format.getFrameRate();
+        y = WavIO.sGetSignal("metan.wav")[0];
 
 
         // set format
@@ -80,11 +77,10 @@ public class Test
 
         /* 
          * print format info
-         * 
-         * usage
-         *  WavIO_Obj.printAudioFormat();
+         * usage: WavIO_Obj.printAudioFormat();
          */
         output.printAudioFormat();
+
 
         /* 
          * output wav file 
@@ -94,6 +90,8 @@ public class Test
          * 
          * usage (static method)
          *  WavIO.outputData(String FILENAME, int nbits, double fs, double[]... signal);
+         *      signal[0]: left
+         *      signal[1]: right
         */
         try{
             output.outputData("helloworld.wav");

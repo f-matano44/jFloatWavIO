@@ -34,9 +34,11 @@ class Main {
         double[][] signal = staticGetSignal("path/to/input.wav");
 
         // Output Signal
+        // success: 0
+        // failed:  -1
         final int nbits = 16;        // bit depth
         final double fs = 16000.0;    // sampling rate 
-        staticOutputData("path/to/output.wav", nbits, fs, signal);
+        int result = staticOutputData("path/to/output.wav", nbits, fs, signal);
     }
 }
 ```
