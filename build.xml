@@ -23,8 +23,6 @@
         <antcall target="compile" />
         <antcall target="makeJar" />
         <antcall target="buildTestCode" />
-        <!--<antcall target="filecopy" />-->
-        <!--<antcall target="makeZip" />-->
     </target>
 
 
@@ -82,7 +80,6 @@
 
     <target name="makeZip">
         <echo message="Nothing to do." />
-        <!--<echo message="Compress binary files to zip" />--> 
     </target>
 
 </project>

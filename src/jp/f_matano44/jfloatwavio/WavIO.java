@@ -1,10 +1,16 @@
 package jp.f_matano44.jfloatwavio;
 
-import java.io.*;
-import java.nio.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
-
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 
 public class WavIO
@@ -87,7 +93,7 @@ public class WavIO
 
     // -----------------------------------------------------------------------
     // constructor (from array)
-    public WavIO(final AudioFormat f, double[]... signal) throws Exception
+    public WavIO(final AudioFormat f, double[]... signal) throws UnsupportedAudioFileException
     {
         final String exceptionString = 
         "\njFloatWavIO can't read this signal." +
@@ -112,7 +118,7 @@ public class WavIO
 
         // reject don't allowed files
         if(!isFormatOK(this.format) || signal.length != this.format.getChannels())
-            throw new Exception(exceptionString);
+            throw new UnsupportedAudioFileException(exceptionString);
     }
 
 
