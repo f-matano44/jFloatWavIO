@@ -21,11 +21,12 @@ public class WavIO {
      *      The name of the file from which to read the wave signal.
      * @return
      *      A 2D array of doubles representing the wave signal.
+     *      success: double[][]
+     *      failure: null
      */
     public static double[][] sGetSignal(final String filename) {
         try {
-            WavIO wav = new WavIO(filename);
-            return wav.getSignal();
+            return new WavIO(filename).getSignal();
         } catch (Exception e) {
             return null;
         }
@@ -40,11 +41,12 @@ public class WavIO {
      *      The name of the file from which to retrieve the AudioFormat.
      * @return
      *      The AudioFormat extracted from the file.
+     *      success: double[][]
+     *      failure: null
      */
     public static AudioFormat sGetFormat(final String filename) {
         try {
-            WavIO wav = new WavIO(filename);
-            return wav.getFormat();
+            return new WavIO(filename).getFormat();
         } catch (Exception e) {
             return null;
         }
@@ -77,12 +79,10 @@ public class WavIO {
         );
 
         try {
-            WavIO output = new WavIO(outputFormat, signal);
-            output.outputData(filename);
+            new WavIO(outputFormat, signal).outputData(filename);
         } catch (Exception e) {
             return -1;
         }
-
         return 0;
     }
 
@@ -214,11 +214,8 @@ public class WavIO {
 
     // -----------------------------------------------------------------------
     private boolean isFormatOK(AudioFormat f) {
-        final int channels;
-        final int nBits;
-
-        channels = f.getChannels();
-        nBits = f.getSampleSizeInBits();
+        final int channels = f.getChannels();
+        final int nBits = f.getSampleSizeInBits();
 
         if (
             f.getEncoding() == AudioFormat.Encoding.PCM_SIGNED
@@ -236,8 +233,8 @@ public class WavIO {
         final int channels = this.format.getChannels();
         final int frameSize = this.format.getFrameSize();
         final int sampleSize = frameSize / channels;
-        int[] pos = new int[channels];
-        byte[][] sepByte = new byte[channels][byteArray.length / channels];
+        final int[] pos = new int[channels];
+        final byte[][] sepByte = new byte[channels][byteArray.length / channels];
 
         if (channels == 2) {
             for (int i = 0; i < byteArray.length; i += frameSize) {
@@ -265,7 +262,7 @@ public class WavIO {
         final int sampleSize = nBits / 8;
         final int sampleNum = bArray[0].length / sampleSize;
         byte[] temp = new byte[intIs4Bytes];
-        double[][] dArray = new double[channels][sampleNum];
+        final double[][] dArray = new double[channels][sampleNum];
 
         for (int c = 0; c < channels; c++) {
             for (int i = 0; i < bArray[c].length; i++) {
@@ -323,8 +320,6 @@ public class WavIO {
     }
 
 
-    // -----------------------------------------------------------------------
-    // output to wav
     /**
      * Output the member variable (double[][] signal) as a WAV file.
      *
@@ -339,12 +334,9 @@ public class WavIO {
         final int nBits = this.format.getSampleSizeInBits();
         final int sampleSize = nBits / 8;
         final int doubleArrayLength = this.signal[0].length;
-        int connectPos;
-        final InputStream is;
-        final AudioInputStream ais;
-        int[][] intSignal = new int[channels][doubleArrayLength];
-        byte[] conBytes = new byte[channels * doubleArrayLength * sampleSize];
-        byte[][]
+        final int[][] intSignal = new int[channels][doubleArrayLength];
+        final byte[] conBytes = new byte[channels * doubleArrayLength * sampleSize];
+        final byte[][]
             notConBytes = new byte[channels][doubleArrayLength * sampleSize];
 
         // double -> int
@@ -381,7 +373,7 @@ public class WavIO {
         }
 
         // connect byte array
-        connectPos = 0;
+        int connectPos = 0;
         for (int i = 0; i < doubleArrayLength * sampleSize; i += sampleSize) {
             for (int j = 0; j < channels; j++) {
                 for (int k = 0; k < sampleSize; k++) {
@@ -392,8 +384,8 @@ public class WavIO {
         }
 
         // output
-        is = new ByteArrayInputStream(conBytes); 
-        ais = new AudioInputStream(is, this.format, conBytes.length);
+        final InputStream is = new ByteArrayInputStream(conBytes); 
+        final AudioInputStream ais = new AudioInputStream(is, this.format, conBytes.length);
         AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(filename));
     }
 }
