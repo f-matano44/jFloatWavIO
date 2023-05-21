@@ -80,10 +80,10 @@ public class WavIO {
 
         try {
             new WavIO(outputFormat, signal).outputData(filename);
+            return 0;
         } catch (Exception e) {
             return -1;
         }
-        return 0;
     }
 
 
@@ -146,28 +146,36 @@ public class WavIO {
     public WavIO(final AudioFormat f, double[]... signal)
         throws Exception {
         // ファイルフォーマットが異常な場合に例外を投げる
+        final String exceptionString = 
+            "\njFloatWavIO can't read this signal."
+            + "\nPlease check for AudioFormat...";
         if (!isFormatOK(f) || signal.length != f.getChannels()) {
-            final String exceptionString = 
-                "\njFloatWavIO can't read this signal."
-                + "\nPlease check for AudioFormat...";
             throw new Exception(exceptionString);
         }
 
         final int arrayLength;
         final int channels = f.getChannels();
-        // 配列長の決定 (長い方に揃える)
-        if (channels == 2 && (signal[0].length < signal[1].length)) {
-            arrayLength = signal[1].length;
-        } else { 
-            arrayLength = signal[0].length;
+        // 配列長の決定
+        switch (channels) {
+            case 1:
+                arrayLength = signal[0].length;
+                break;
+            case 2:
+                arrayLength = Math.max(signal[0].length, signal[1].length);
+                break;
+            default: // channel 数が異常な場合も例外をスロー (ないと思うけど)
+                throw new Exception(exceptionString);
         }
+
 
         // メンバ変数にコピー
         this.signal = new double[channels][arrayLength];
         for (int i = 0; i < channels; i++) {
-            for (int j = 0; j < signal[i].length; j++) {
-                this.signal[i][j] = signal[i][j];
-            }
+            System.arraycopy(
+                signal[i], 0,
+                this.signal[i], 0,
+                signal[i].length
+            );
         }
         this.format = f;
     }
