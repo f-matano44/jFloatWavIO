@@ -202,6 +202,77 @@ public class WavIO {
     }
 
 
+    /**
+     * Output the member variable (double[][] signal) as a WAV file.
+     *
+     * @param filename 
+     *      the name of the WAV file to be created
+     * @throws IOException 
+     *      if an I/O error occurs while writing the file
+    */
+    public void outputData(final String filename) throws IOException {
+        final int SIGN = 1;
+        final int channels = this.format.getChannels();
+        final int nBits = this.format.getSampleSizeInBits();
+        final int sampleSize = nBits / 8;
+        final int doubleArrayLength = this.signal[0].length;
+        final int[][] intSignal = new int[channels][doubleArrayLength];
+        final byte[] conBytes = new byte[channels * doubleArrayLength * sampleSize];
+        final byte[][]
+            notConBytes = new byte[channels][doubleArrayLength * sampleSize];
+
+        // double -> int
+        for (int i = 0; i < channels; i++) {
+            for (int j = 0; j < doubleArrayLength; j++) {
+                intSignal[i][j] = (int) (this.signal[i][j] * Math.pow(2, nBits - SIGN));
+            }
+        }
+
+        // int -> byte array
+        for (int i = 0; i < channels; i++) {
+            int bytePos = 0;
+            for (int j = 0; j < doubleArrayLength; j++) {
+                final byte[] intToByte = 
+                    ByteBuffer.allocate(4).putInt(intSignal[i][j]).array();
+                final byte[] buf =
+                    Arrays.copyOfRange(intToByte, 4 - sampleSize, 4);
+                
+                // if wanted little endian, convert to it.
+                if (!this.format.isBigEndian()) {
+                    final int tail = sampleSize - 1;
+                    for (int k = 0; k < (sampleSize / 2); k++) {
+                        final byte temp = buf[k];
+                        buf[k] = buf[tail - k];
+                        buf[tail - k] = temp;
+                    }
+                }
+                
+                // insert byte array
+                for (int k = 0; k < buf.length; k++) {
+                    notConBytes[i][bytePos] = buf[k];
+                    bytePos++;
+                }
+            }
+        }
+
+        // connect byte array
+        int connectPos = 0;
+        for (int i = 0; i < doubleArrayLength * sampleSize; i += sampleSize) {
+            for (int j = 0; j < channels; j++) {
+                for (int k = 0; k < sampleSize; k++) {
+                    conBytes[connectPos] = notConBytes[j][i + k];
+                    connectPos++;
+                }
+            }
+        }
+
+        // output
+        final InputStream is = new ByteArrayInputStream(conBytes); 
+        final AudioInputStream ais = new AudioInputStream(is, this.format, conBytes.length);
+        AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(filename));
+    }
+
+
     /** print audio format to System.out. */
     public void printAudioFormat() {
         System.out.println("Encoding: " + this.format.getEncoding());
@@ -265,7 +336,7 @@ public class WavIO {
         final int nBits = this.format.getSampleSizeInBits();
         final int sampleSize = nBits / 8;
         final int sampleNum = bArray[0].length / sampleSize;
-        byte[] temp = new byte[intIs4Bytes];
+        final byte[] temp = new byte[intIs4Bytes];
         final double[][] dArray = new double[channels][sampleNum];
 
         for (int c = 0; c < channels; c++) {
@@ -276,8 +347,8 @@ public class WavIO {
                 temp[tPos] = bArray[c][i];
                 if (tPos % sampleSize == sampleSize - 1) {
                     // preProcess
-                    temp = this.getBigEndian(temp);
-                    temp = this.fillArray(temp);
+                    this.getBigEndian(temp);
+                    this.fillArray(temp);
                     // byte to int
                     dArray[c][dPos] = (double) ByteBuffer.wrap(temp).getInt();
                     // int to double
@@ -290,7 +361,7 @@ public class WavIO {
     }
 
 
-    private byte[] getBigEndian(byte[] array) {
+    private void getBigEndian(final byte[] array) {
         final boolean isBigEndian = this.format.isBigEndian();
 
         if (!isBigEndian) {
@@ -301,12 +372,10 @@ public class WavIO {
                 array[tail - i] = temp;
             }
         }
-
-        return array;
     }
 
 
-    private byte[] fillArray(byte[] array) {
+    private void fillArray(final byte[] array) {
         final int nBits = this.format.getSampleSizeInBits();
         final int sampleSize = nBits / 8;
         final int fillDigit = intIs4Bytes - sampleSize;
@@ -319,77 +388,5 @@ public class WavIO {
                 array[i] = -1;
             }
         }
-
-        return array;
-    }
-
-
-    /**
-     * Output the member variable (double[][] signal) as a WAV file.
-     *
-     * @param filename 
-     *      the name of the WAV file to be created
-     * @throws IOException 
-     *      if an I/O error occurs while writing the file
-    */
-    public void outputData(final String filename) throws IOException {
-        final int SIGN = 1;
-        final int channels = this.format.getChannels();
-        final int nBits = this.format.getSampleSizeInBits();
-        final int sampleSize = nBits / 8;
-        final int doubleArrayLength = this.signal[0].length;
-        final int[][] intSignal = new int[channels][doubleArrayLength];
-        final byte[] conBytes = new byte[channels * doubleArrayLength * sampleSize];
-        final byte[][]
-            notConBytes = new byte[channels][doubleArrayLength * sampleSize];
-
-        // double -> int
-        for (int i = 0; i < channels; i++) {
-            for (int j = 0; j < doubleArrayLength; j++) {
-                intSignal[i][j] = (int) (this.signal[i][j] * Math.pow(2, nBits - SIGN));
-            }
-        }
-
-        // int -> byte array
-        for (int i = 0; i < channels; i++) {
-            int bytePos = 0;
-            for (int j = 0; j < doubleArrayLength; j++) {
-                byte[] intToByte = 
-                    ByteBuffer.allocate(4).putInt(intSignal[i][j]).array();
-                byte[] buf = Arrays.copyOfRange(intToByte, 4 - sampleSize, 4);
-                
-                // if wanted little endian, convert to it.
-                if (!this.format.isBigEndian()) {
-                    final int tail = sampleSize - 1;
-                    for (int k = 0; k < (sampleSize / 2); k++) {
-                        final byte temp = buf[k];
-                        buf[k] = buf[tail - k];
-                        buf[tail - k] = temp;
-                    }
-                }
-                
-                // insert byte array
-                for (int k = 0; k < buf.length; k++) {
-                    notConBytes[i][bytePos] = buf[k];
-                    bytePos++;
-                }
-            }
-        }
-
-        // connect byte array
-        int connectPos = 0;
-        for (int i = 0; i < doubleArrayLength * sampleSize; i += sampleSize) {
-            for (int j = 0; j < channels; j++) {
-                for (int k = 0; k < sampleSize; k++) {
-                    conBytes[connectPos] = notConBytes[j][i + k];
-                    connectPos++;
-                }
-            }
-        }
-
-        // output
-        final InputStream is = new ByteArrayInputStream(conBytes); 
-        final AudioInputStream ais = new AudioInputStream(is, this.format, conBytes.length);
-        AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(filename));
     }
 }
