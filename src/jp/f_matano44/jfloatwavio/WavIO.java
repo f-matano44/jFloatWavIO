@@ -110,7 +110,11 @@ public class WavIO {
      * @return signal data as double[][]
      */
     public double[][] getSignal() {
-        return this.signal;
+        double[][] x = new double[this.signal.length][];
+        for (int i = 0; i < this.signal.length; i++) {
+            x[i] = this.signal[i].clone();
+        }
+        return x;
     }
 
 
@@ -145,7 +149,7 @@ public class WavIO {
         if (!isFormatOK(f) || signal.length != f.getChannels()) {
             final String exceptionString = 
                 "\njFloatWavIO can't read this signal."
-                + "\nPlease check for AudioFormat..";
+                + "\nPlease check for AudioFormat...";
             throw new Exception(exceptionString);
         }
 
@@ -292,7 +296,7 @@ public class WavIO {
         if (!isBigEndian) {
             final int tail = array.length - 1;
             for (int i = 0; i < (array.length / 2); i++) {
-                byte temp = array[i];
+                final byte temp = array[i];
                 array[i] = array[tail - i];
                 array[tail - i] = temp;
             }
