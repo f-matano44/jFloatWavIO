@@ -5,6 +5,7 @@ Java package to read/write wav file as float or double array.
 ## Development environment
 * [Java 17 (LTS)](https://adoptium.net/temurin/releases/?version=17)
 * [ant 1.10](https://ant.apache.org/bindownload.cgi)
+* [VSCode](https://code.visualstudio.com/) + [Checkstyle for Java](https://marketplace.visualstudio.com/items?itemName=shengchen.vscode-checkstyle)
 
 ## Readable/writeable format
 | \ |value|
