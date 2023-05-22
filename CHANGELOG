@@ -1,6 +1,7 @@
-1.0.1
-bug fix
+1.1.0
 Added 'sOutputData()' examples to Test.java
+Refining the exceptions being thrown
+bug fix
 
 1.0.0
 Delete "DrawSignal" method

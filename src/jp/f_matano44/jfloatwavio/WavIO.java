@@ -10,6 +10,7 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /** Java library for wav file as float. */
 public class WavIO {
@@ -56,6 +57,8 @@ public class WavIO {
     /**
      * Writes the provided signal data to a .wav file.
      * This is a static method that can be used without instantiating the class.
+     * Encoding: PCM_SIGNED
+     * isBigEndian: false
      *
      * @param filename The name of the output .wav file.
      * @param nbits The bit depth for the audio data.
@@ -72,10 +75,8 @@ public class WavIO {
     ) {
         // フォーマットの設定
         final int channels = signal.length;
-        final int frameSize = (nbits / 8) * channels;
         AudioFormat outputFormat = new AudioFormat(
-            AudioFormat.Encoding.PCM_SIGNED, (float) fs, nbits, channels, 
-            frameSize, (float) fs, false
+            (float) fs, nbits, channels, true, false
         );
 
         try {
@@ -97,7 +98,7 @@ public class WavIO {
     /**
      * getter of audio format.
      *
-     * @return AudioFormat
+     * @return AudioFormat (Immutable)
      */
     public AudioFormat getFormat() {
         return this.format;
@@ -110,9 +111,11 @@ public class WavIO {
      * @return signal data as double[][]
      */
     public double[][] getSignal() {
-        double[][] x = new double[this.signal.length][];
+        double[][] x = new double[this.signal.length][this.signal[0].length];
         for (int i = 0; i < this.signal.length; i++) {
-            x[i] = this.signal[i].clone();
+            System.arraycopy(
+                this.signal[i], 0,
+                x[i], 0, this.signal[0].length);
         }
         return x;
     }
@@ -141,16 +144,22 @@ public class WavIO {
      * @param f AudioFormat object specifying the data format of the audio data.
      * @param signal Array containing the audio signal data.
      *
-     * @throws Exception if the provided AudioFormat "f" is not supported.
+     * @throws UnsupportedAudioFileException
+     *      if the provided AudioFormat is not supported.
+     * @throws IllegalArgumentException
+     *      if AudioFormat and Signal channel counts don't match.
      */
     public WavIO(final AudioFormat f, double[]... signal)
-        throws Exception {
+        throws UnsupportedAudioFileException, IllegalArgumentException {
         // ファイルフォーマットが異常な場合に例外を投げる
-        final String exceptionString = 
-            "\njFloatWavIO can't read this signal."
-            + "\nPlease check for AudioFormat...";
-        if (!isFormatOK(f) || signal.length != f.getChannels()) {
-            throw new Exception(exceptionString);
+        if (!isFormatOK(f)) {
+            throw new UnsupportedAudioFileException(
+                "This format is unsupported."
+            );
+        } else if (signal.length != f.getChannels()) {
+            throw new IllegalArgumentException(
+                "AudioFormat and Signal channel counts don't match."
+            );
         }
 
         final int arrayLength;
@@ -164,9 +173,10 @@ public class WavIO {
                 arrayLength = Math.max(signal[0].length, signal[1].length);
                 break;
             default: // channel 数が異常な場合も例外をスロー (ないと思うけど)
-                throw new Exception(exceptionString);
+                throw new UnsupportedAudioFileException(
+                    "This format is unsupported."
+                );
         }
-
 
         // メンバ変数にコピー
         this.signal = new double[channels][arrayLength];
@@ -185,22 +195,21 @@ public class WavIO {
      * Constructs a new WavIO object from the provided file name.
      *
      * @param filename the name of the file to be processed
-     * @throws Exception 
-     *      if an error occurs during file reading
-     *      or provided file is not supported
+     * @throws IOException if an error occurs during file reading
+     * @throws UnsupportedAudioFileException if Provided file is not supported
      */
-    public WavIO(final String filename) throws Exception {
+    public WavIO(final String filename) 
+        throws UnsupportedAudioFileException, IOException {
         // wav の読み込み
         final File f = new File(filename);
         final var s = AudioSystem.getAudioInputStream(f);
-        final String exceptionString = 
-            "\njFloatWavIO can't open this file."
-            + "\nPlease check for file format..";
 
         // ファイルフォーマットが異常な場合に例外を投げる
         this.format = s.getFormat();
         if (!isFormatOK(this.format)) {
-            throw new Exception(exceptionString);
+            throw new UnsupportedAudioFileException(
+                "This format is unsupported."
+            );
         }
 
         // byte -> double

@@ -15,6 +15,11 @@ Java package to read/write wav file as float or double array.
 |Bit depth|8, 16, 24, 32|
 |Endian|any|
 
+## Understanding version numbers (Example: x.y.z)
+* `x`: When this part changes, it indicates breaking changes. Different values here signify incompatibility.
+* `y`: Includes backward-compatible changes and added features. Depending on how the code is invoked, some modification may be required.
+* `z`: Represents minor changes with minimal impact on users, such as bug fixes. No new features are added at this level.
+
 ## Build
 Run under command, and then source codes are builded to jar file in `bin/`.
 ```SH

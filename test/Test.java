@@ -21,24 +21,24 @@ public class Test {
         }
 
 
-        // get format
+        /* get format */
         final AudioFormat input1Format = input1.getFormat();
         final float fs = input1Format.getSampleRate();
         final int nbits = input1Format.getSampleSizeInBits();
-        final int frameSize = input1Format.getFrameSize();
-        final float frameRate = input1Format.getFrameRate();
 
 
         /* 
-         * get double array 
+         * get {float, double} array
+         *      signal[0]: monoral or left
+         *      signal[1]: right
          * 
          * usage
          *  double[][]  signal = wavIO_Obj.getSignal();
          *  float[][]   signal = wavIO_Obj.getFloatSignal();
          * 
          * usage (static method)
-         *  double[][]  signal = wavIO_Obj.getSignal();
-         *  float[][]   signal = wavIO_Obj.getFloatSignal();
+         *  double[][]  signal = WavIO.sGetSignal();
+         *  float[][]   signal = WavIO.sGetFloatSignal();
          */
         final double[] x = input1.getSignal()[0];
         final double[] y = WavIO.sGetSignal("metan.wav")[0];
@@ -48,12 +48,10 @@ public class Test {
         final int outputChannels = 2;
         final float outputFs = fs;
         final int outputNbits = nbits;
-        final int outputFrameSize = frameSize * outputChannels;
-        final float outputframeRate = frameRate;
+        final boolean signed = true;
         final boolean bigEndian = false;
         final AudioFormat outputFormat = new AudioFormat(
-            AudioFormat.Encoding.PCM_SIGNED, outputFs, outputNbits, outputChannels,
-            outputFrameSize, outputframeRate, bigEndian
+            (float) outputFs, outputNbits, outputChannels, signed, bigEndian
         );
 
 
