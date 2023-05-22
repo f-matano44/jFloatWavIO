@@ -48,7 +48,7 @@ public class Test {
         final int outputChannels = 2;
         final float outputFs = fs;
         final int outputNbits = nbits;
-        final boolean signed = true;
+        final boolean signed = true; // This library is allowed PCM-SIGN only.
         final boolean bigEndian = false;
         final AudioFormat outputFormat = new AudioFormat(
             (float) outputFs, outputNbits, outputChannels, signed, bigEndian

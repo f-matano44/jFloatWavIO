@@ -27,26 +27,7 @@ jfloatwavio/$ ant
 ```
 
 ## Usage
-If you use error handling, please read `src/test/Test.java`.
-``` java
-import jp.f_matano44.jfloatwavio.WavIO;
-
-class Main {
-    public static void main(String[] args) {
-        // Input signal
-        // success: double[][]
-        // failed:  null
-        double[][] signal = sGetSignal("path/to/input.wav");
-
-        final int nbits = 16;       // bit depth
-        final double fs = 16000.0;  // sampling rate
-        // Output Signal
-        // success: 0
-        // failure: -1
-        int result = sOutputData("path/to/output.wav", nbits, fs, signal);
-    }
-}
-```
+Please read `src/test/Test.java`.
 
 ## Run Test.java
 ```SH
