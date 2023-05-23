@@ -1,11 +1,14 @@
+1.1.1
+Update documents
+
 1.1.0
-Added 'sOutputData()' examples to Test.java
+Added examples for static method to Test.java
 Refining the exceptions being thrown
-bug fix
+Bug fix
 
 1.0.0
 Delete "DrawSignal" method
-add static method
+Add static method
 
 0.0.2
 Delete debug code
