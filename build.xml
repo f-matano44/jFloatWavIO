@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <project name="jfloatwavio" default="default" basedir=".">
-    <property name="version" value="1.1.1" />
+    <property name="version" value="1.1.2" />
 
     <!-- configuration -->
     <property name="conf.encoding" value="UTF-8" />
