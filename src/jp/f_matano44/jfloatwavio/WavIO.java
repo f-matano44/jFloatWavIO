@@ -3,17 +3,25 @@ package jp.f_matano44.jfloatwavio;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+
 /** Java library for wav file as float. */
 public class WavIO {
+    public static void main(String[] args) {
+        System.out.println("jFloatWavIO @ Mozilla Public License 2.0");
+        System.out.println("Copyright 2023 Fumiyoshi MATANO");
+    }
+
+
     /**
      * Retrieves the wave signal from the provided file and returns it as a 2D array of doubles.
      * This is a static method that can be used without instantiating the class.
@@ -22,8 +30,15 @@ public class WavIO {
      *      The name of the file from which to read the wave signal.
      * @return
      *      A 2D array of doubles representing the wave signal.
-     *      success: double[][]
-     *      failure: null
+     *      <ul>
+     *          <li> success: double[][]
+     *              <ul>
+     *                  <li> signal[0]: left or mono </li>
+     *                  <li> signal[1]: right </li>
+     *              </ul>
+     *          </li>
+     *          <li> failure: null </li>
+     *      </ul>
      */
     public static double[][] sGetSignal(final String filename) {
         try {
@@ -42,8 +57,10 @@ public class WavIO {
      *      The name of the file from which to retrieve the AudioFormat.
      * @return
      *      The AudioFormat extracted from the file.
-     *      success: double[][]
-     *      failure: null
+     *      <ul>
+     *          <li> success: AudioFormat </li>
+     *          <li> failure: null </li>
+     *      </ul>
      */
     public static AudioFormat sGetFormat(final String filename) {
         try {
@@ -58,41 +75,78 @@ public class WavIO {
      * Writes the provided signal data to a .wav file.
      * This is a static method that can be used without instantiating the class.
      * Encoding: PCM_SIGNED
-     * isBigEndian: false
+     * Endian: Little Endian
      *
      * @param filename The name of the output .wav file.
      * @param nbits The bit depth for the audio data.
      * @param fs The sampling rate of the audio data.
-     * @param signal The audio signal data to be written.
+     * @param monoral The audio signal data to be written.
      * 
      * @return status
-     *       0: success
-     *      -1: failure
+     *      <ul>
+     *          <li>  0: success </li>
+     *          <li> -1: failure </li>
+     *      </ul>
      */
     public static int sOutputData(
         final String filename, final int nbits, final double fs,
+        final double[] mono
+    ) {
+        return sOutputDataBody(filename, nbits, fs, mono);
+    }
+
+
+    /**
+     * Writes the provided signal data to a .wav file.
+     * This is a static method that can be used without instantiating the class.
+     * Encoding: PCM_SIGNED
+     * Endian: Little Endian
+     *
+     * @param filename The name of the output .wav file.
+     * @param nbits The bit depth for the audio data.
+     * @param fs The sampling rate of the audio data.
+     * @param left The audio signal data to be written.
+     * @param right The audio signal data to be written.
+     * 
+     * @return status
+     *      <ul>
+     *          <li>  0: success </li>
+     *          <li> -1: failure </li>
+     *      </ul>
+     */
+    public static int sOutputData(
+        final String filename, final int nbits, final double fs,
+        final double[] left, final double[] right
+    ) {
+        return sOutputDataBody(filename, nbits, fs, left, right);
+    }
+
+
+    private static int sOutputDataBody(
+        final String filename, final int nbits, final double fs,
         final double[]... signal
     ) {
-        // フォーマットの設定
-        final int channels = signal.length;
-        AudioFormat outputFormat = new AudioFormat(
-            (float) fs, nbits, channels, true, false
-        );
-
         try {
-            new WavIO(outputFormat, signal).outputData(filename);
-            return 0;
+            final int channels = signal.length;
+            final AudioFormat outputFormat = new AudioFormat(
+                    (float) fs, nbits, channels, true, false
+                );
+
+            if (isFormatOK(outputFormat)) {
+                new WavIO(outputFormat, signal).outputData(filename);
+                return 0;
+            } else {
+                throw new UnsupportedAudioFileException();
+            }
         } catch (Exception e) {
             return -1;
         }
     }
 
 
-    // メンバ変数
+    // member variable
     private final AudioFormat format;
     private final double[][] signal;
-    // 定数
-    private static final int intIs4Bytes = 4;
 
 
     /**
@@ -109,13 +163,15 @@ public class WavIO {
      * getter of signal data.
      *
      * @return signal data as double[][]
+     * <ul>
+     *      <li> signal[0]: left or mono </li>
+     *      <li> signal[1]: right </li>
+     * </ul>
      */
     public double[][] getSignal() {
-        double[][] x = new double[this.signal.length][this.signal[0].length];
+        final double[][] x = new double[this.signal.length][];
         for (int i = 0; i < this.signal.length; i++) {
-            System.arraycopy(
-                this.signal[i], 0,
-                x[i], 0, this.signal[0].length);
+            x[i] = this.signal[i].clone();
         }
         return x;
     }
@@ -125,10 +181,15 @@ public class WavIO {
      * getter of signal data.
      *
      * @return signal data as float[][]
+     *      <ul>
+     *          <li> signal[0]: left or mono </li>
+     *          <li> signal[1]: right </li>
+     *      </ul>
      */
     public float[][] getFloatSignal() {
-        float[][] xf = new float[this.signal.length][this.signal[0].length];
+        final float[][] xf = new float[this.signal.length][];
         for (int i = 0; i < this.signal.length; i++) {
+            xf[i] = new float[this.signal[i].length];
             for (int j = 0; j < this.signal[i].length; j++) {
                 xf[i][j] = (float) this.signal[i][j];
             }
@@ -143,13 +204,17 @@ public class WavIO {
      *
      * @param f AudioFormat object specifying the data format of the audio data.
      * @param signal Array containing the audio signal data.
+     *      <ul>
+     *          <li> signal[0]: left or mono </li>
+     *          <li> signal[1]: right </li>
+     *      </ul>
      *
      * @throws UnsupportedAudioFileException
      *      if the provided AudioFormat is not supported.
      * @throws IllegalArgumentException
      *      if AudioFormat and Signal channel counts don't match.
      */
-    public WavIO(final AudioFormat f, double[]... signal)
+    public WavIO(final AudioFormat f, final double[]... signal)
         throws UnsupportedAudioFileException, IllegalArgumentException {
         // ファイルフォーマットが異常な場合に例外を投げる
         if (!isFormatOK(f)) {
@@ -162,32 +227,9 @@ public class WavIO {
             );
         }
 
-        final int arrayLength;
-        final int channels = f.getChannels();
-        // 配列長の決定
-        switch (channels) {
-            case 1:
-                arrayLength = signal[0].length;
-                break;
-            case 2:
-                arrayLength = Math.max(signal[0].length, signal[1].length);
-                break;
-            default: // channel 数が異常な場合も例外をスロー (ないと思うけど)
-                throw new UnsupportedAudioFileException(
-                    "This format is unsupported."
-                );
-        }
-
         // メンバ変数にコピー
-        this.signal = new double[channels][arrayLength];
-        for (int i = 0; i < channels; i++) {
-            System.arraycopy(
-                signal[i], 0,
-                this.signal[i], 0,
-                signal[i].length
-            );
-        }
         this.format = f;
+        this.signal = adjustLength(signal);
     }
 
 
@@ -202,20 +244,29 @@ public class WavIO {
         throws UnsupportedAudioFileException, IOException {
         // wav の読み込み
         final File f = new File(filename);
-        final var s = AudioSystem.getAudioInputStream(f);
+        final var ais = AudioSystem.getAudioInputStream(f);
 
         // ファイルフォーマットが異常な場合に例外を投げる
-        this.format = s.getFormat();
+        this.format = ais.getFormat();
         if (!isFormatOK(this.format)) {
             throw new UnsupportedAudioFileException(
                 "This format is unsupported."
             );
         }
 
+        final int channels = this.format.getChannels();
+        final int nBits = this.format.getSampleSizeInBits();
+        final boolean isBigEndian = this.format.isBigEndian();
+        // Separate by channels
+        final byte[] notSepByteArray = ais.readAllBytes();
+        final byte[][] sepByteArray = separateByChannels(notSepByteArray);
         // byte -> double
-        final byte[] sBytes = s.readAllBytes();
-        final byte[][] sBytesSeparatedByChannels = separateByChannels(sBytes);
-        this.signal = byte2double(sBytesSeparatedByChannels);
+        final double[][] sig = new double[channels][];
+        for (int index = 0; index < channels; index++) {
+            sig[index] =
+                Converter.byte2double(sepByteArray[index], nBits, isBigEndian);
+        }
+        this.signal = adjustLength(sig);
     }
 
 
@@ -228,52 +279,20 @@ public class WavIO {
      *      if an I/O error occurs while writing the file
     */
     public void outputData(final String filename) throws IOException {
-        final int SIGN = 1;
+        // byte -> double
         final int channels = this.format.getChannels();
         final int nBits = this.format.getSampleSizeInBits();
-        final int sampleSize = nBits / 8;
-        final int doubleArrayLength = this.signal[0].length;
-        final int[][] intSignal = new int[channels][doubleArrayLength];
-        final byte[] conBytes = new byte[channels * doubleArrayLength * sampleSize];
-        final byte[][]
-            notConBytes = new byte[channels][doubleArrayLength * sampleSize];
-
-        // double -> int
+        final boolean isBigEndian = this.format.isBigEndian();
+        final byte[][] notConBytes = new byte[channels][];
         for (int i = 0; i < channels; i++) {
-            for (int j = 0; j < doubleArrayLength; j++) {
-                intSignal[i][j] = (int) (this.signal[i][j] * Math.pow(2, nBits - SIGN));
-            }
-        }
-
-        // int -> byte array
-        for (int i = 0; i < channels; i++) {
-            int bytePos = 0;
-            for (int j = 0; j < doubleArrayLength; j++) {
-                final byte[] intToByte = 
-                    ByteBuffer.allocate(4).putInt(intSignal[i][j]).array();
-                final byte[] buf =
-                    Arrays.copyOfRange(intToByte, 4 - sampleSize, 4);
-                
-                // if wanted little endian, convert to it.
-                if (!this.format.isBigEndian()) {
-                    final int tail = sampleSize - 1;
-                    for (int k = 0; k < (sampleSize / 2); k++) {
-                        final byte temp = buf[k];
-                        buf[k] = buf[tail - k];
-                        buf[tail - k] = temp;
-                    }
-                }
-                
-                // insert byte array
-                for (int k = 0; k < buf.length; k++) {
-                    notConBytes[i][bytePos] = buf[k];
-                    bytePos++;
-                }
-            }
+            notConBytes[i] = Converter.double2byte(this.signal[i], nBits, isBigEndian);
         }
 
         // connect byte array
         int connectPos = 0;
+        final int sampleSize = nBits / 8;
+        final int doubleArrayLength = this.signal[0].length;
+        final byte[] conBytes = new byte[channels * doubleArrayLength * sampleSize];
         for (int i = 0; i < doubleArrayLength * sampleSize; i += sampleSize) {
             for (int j = 0; j < channels; j++) {
                 for (int k = 0; k < sampleSize; k++) {
@@ -284,8 +303,8 @@ public class WavIO {
         }
 
         // output
-        final InputStream is = new ByteArrayInputStream(conBytes); 
-        final AudioInputStream ais = new AudioInputStream(is, this.format, conBytes.length);
+        final var is = new ByteArrayInputStream(conBytes); 
+        final var ais = new AudioInputStream(is, this.format, conBytes.length);
         AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(filename));
     }
 
@@ -304,8 +323,8 @@ public class WavIO {
     }
 
 
-    // -----------------------------------------------------------------------
-    private boolean isFormatOK(AudioFormat f) {
+    // private methods -----------------------------------------------------------
+    private static boolean isFormatOK(AudioFormat f) {
         final int channels = f.getChannels();
         final int nBits = f.getSampleSizeInBits();
 
@@ -321,89 +340,44 @@ public class WavIO {
     }
 
 
+    public static double[][] adjustLength(final double[][] a) {
+        final List<Integer> length = new ArrayList<>();
+        for (final double[] array: a) {
+            length.add(array.length);
+        }
+        final int maxLength = Collections.max(length);
+
+        final double[][] ret = new double[a.length][maxLength];
+        for (int i = 0; i < ret.length; i++) {
+            System.arraycopy(a[i], 0, ret[i], 0, a[i].length);
+        }
+    
+        return ret;
+    }
+
+
     private byte[][] separateByChannels(final byte[] byteArray) {
         final int channels = this.format.getChannels();
         final int frameSize = this.format.getFrameSize();
         final int sampleSize = frameSize / channels;
         final int[] pos = new int[channels];
-        final byte[][] sepByte = new byte[channels][byteArray.length / channels];
+        final byte[][] sepByteArray = new byte[channels][byteArray.length / channels];
 
         if (channels == 2) {
             for (int i = 0; i < byteArray.length; i += frameSize) {
                 for (int j = 0; j < sampleSize; j++) {
-                    sepByte[0][pos[0]] = byteArray[i + j];
+                    sepByteArray[0][pos[0]] = byteArray[i + j];
                     pos[0]++;
                 }   
                 for (int j = sampleSize; j < frameSize; j++) {
-                    sepByte[1][pos[1]] = byteArray[i + j];
+                    sepByteArray[1][pos[1]] = byteArray[i + j];
                     pos[1]++;
                 }   
             }
         } else { // channels == 1
-            sepByte[0] = byteArray;
+            sepByteArray[0] = byteArray;
         }
 
-        return sepByte;
-    }
-
-
-    private double[][] byte2double(final byte[][] bArray) {
-        final int SIGN = 1;
-        final int channels = this.format.getChannels();
-        final int nBits = this.format.getSampleSizeInBits();
-        final int sampleSize = nBits / 8;
-        final int sampleNum = bArray[0].length / sampleSize;
-        final byte[] temp = new byte[intIs4Bytes];
-        final double[][] dArray = new double[channels][sampleNum];
-
-        for (int c = 0; c < channels; c++) {
-            for (int i = 0; i < bArray[c].length; i++) {
-                final int tPos = i % sampleSize;
-                final int dPos = i / sampleSize;
-    
-                temp[tPos] = bArray[c][i];
-                if (tPos % sampleSize == sampleSize - 1) {
-                    // preProcess
-                    this.getBigEndian(temp);
-                    this.fillArray(temp);
-                    // byte to int
-                    dArray[c][dPos] = (double) ByteBuffer.wrap(temp).getInt();
-                    // int to double
-                    dArray[c][dPos] = (double) dArray[c][dPos] / Math.pow(2, nBits - SIGN);
-                }
-            }
-        }
-
-        return dArray;
-    }
-
-
-    private void getBigEndian(final byte[] array) {
-        final boolean isBigEndian = this.format.isBigEndian();
-
-        if (!isBigEndian) {
-            final int tail = array.length - 1;
-            for (int i = 0; i < (array.length / 2); i++) {
-                final byte temp = array[i];
-                array[i] = array[tail - i];
-                array[tail - i] = temp;
-            }
-        }
-    }
-
-
-    private void fillArray(final byte[] array) {
-        final int nBits = this.format.getSampleSizeInBits();
-        final int sampleSize = nBits / 8;
-        final int fillDigit = intIs4Bytes - sampleSize;
-        final int fillNum = (array[fillDigit] >> 7) & 1;
-
-        for (int i = 0; i < fillDigit; i++) {
-            if (fillNum == 0) {
-                array[i] = 0;
-            } else { // fillNum == 1
-                array[i] = -1;
-            }
-        }
+        return sepByteArray;
     }
 }

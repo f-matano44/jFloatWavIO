@@ -86,7 +86,7 @@ public class Test {
          * 
          * usage (static method)
          *  WavIO.outputData(String FILENAME, int nbits, double fs, double[]... signal);
-         *      signal[0]: left
+         *      signal[0]: left or mono
          *      signal[1]: right
         */
         try {
