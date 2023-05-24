@@ -12,6 +12,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+
 /** Java library for wav file as float. */
 public class WavIO {
     /**
@@ -58,7 +59,7 @@ public class WavIO {
      * Writes the provided signal data to a .wav file.
      * This is a static method that can be used without instantiating the class.
      * Encoding: PCM_SIGNED
-     * isBigEndian: false
+     * Endian: Little Endian
      *
      * @param filename The name of the output .wav file.
      * @param nbits The bit depth for the audio data.
@@ -73,15 +74,19 @@ public class WavIO {
         final String filename, final int nbits, final double fs,
         final double[]... signal
     ) {
-        // フォーマットの設定
-        final int channels = signal.length;
-        AudioFormat outputFormat = new AudioFormat(
-            (float) fs, nbits, channels, true, false
-        );
-
         try {
-            new WavIO(outputFormat, signal).outputData(filename);
-            return 0;
+            final int channels = signal.length;
+            final AudioFormat outputFormat = 
+                new AudioFormat(
+                    (float) fs, nbits, channels, true, false
+                );
+
+            if (isFormatOK(outputFormat)) {
+                new WavIO(outputFormat, signal).outputData(filename);
+                return 0;
+            } else {
+                throw new UnsupportedAudioFileException();
+            }
         } catch (Exception e) {
             return -1;
         }
@@ -111,11 +116,12 @@ public class WavIO {
      * @return signal data as double[][]
      */
     public double[][] getSignal() {
-        double[][] x = new double[this.signal.length][this.signal[0].length];
+        final double[][] x = new double[this.signal.length][this.signal[0].length];
         for (int i = 0; i < this.signal.length; i++) {
             System.arraycopy(
                 this.signal[i], 0,
-                x[i], 0, this.signal[0].length);
+                x[i], 0, this.signal[0].length
+            );
         }
         return x;
     }
@@ -127,7 +133,7 @@ public class WavIO {
      * @return signal data as float[][]
      */
     public float[][] getFloatSignal() {
-        float[][] xf = new float[this.signal.length][this.signal[0].length];
+        final float[][] xf = new float[this.signal.length][this.signal[0].length];
         for (int i = 0; i < this.signal.length; i++) {
             for (int j = 0; j < this.signal[i].length; j++) {
                 xf[i][j] = (float) this.signal[i][j];
@@ -149,7 +155,7 @@ public class WavIO {
      * @throws IllegalArgumentException
      *      if AudioFormat and Signal channel counts don't match.
      */
-    public WavIO(final AudioFormat f, double[]... signal)
+    public WavIO(final AudioFormat f, final double[]... signal)
         throws UnsupportedAudioFileException, IllegalArgumentException {
         // ファイルフォーマットが異常な場合に例外を投げる
         if (!isFormatOK(f)) {
@@ -305,7 +311,7 @@ public class WavIO {
 
 
     // -----------------------------------------------------------------------
-    private boolean isFormatOK(AudioFormat f) {
+    private static boolean isFormatOK(AudioFormat f) {
         final int channels = f.getChannels();
         final int nBits = f.getSampleSizeInBits();
 
@@ -364,8 +370,8 @@ public class WavIO {
                 temp[tPos] = bArray[c][i];
                 if (tPos % sampleSize == sampleSize - 1) {
                     // preProcess
-                    this.getBigEndian(temp);
-                    this.fillArray(temp);
+                    getBigEndian(temp);
+                    fillArray(temp);
                     // byte to int
                     dArray[c][dPos] = (double) ByteBuffer.wrap(temp).getInt();
                     // int to double
