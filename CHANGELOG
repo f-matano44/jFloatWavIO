@@ -1,20 +1,26 @@
+1.2.0
+* Changed access modifier of Converter (between byte and double) method from private to public
+* Fixed a bug preventing the proper reading of big-endian files
+* Corrected an issue causing a reduction in read accuracy under specific conditions
+* Updated Javadoc to include more detailed information
+
 1.1.2
-modify filename
+* modify filename
 
 1.1.1
-Update documents
+* Update documents
 
 1.1.0
-Added examples for static method to Test.java
-Refining the exceptions being thrown
-Bug fix
+* Added examples for static method to Test.java
+* Refining the exceptions being thrown
+* Bug fix
 
 1.0.0
-Delete "DrawSignal" method
-Add static method
+* Delete "DrawSignal" method
+* Add static method
 
 0.0.2
-Delete debug code
+* Delete debug code
 
 0.0.1
-First Release
+* First Release
