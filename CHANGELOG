@@ -1,3 +1,6 @@
+1.2.1
+* Bug fix
+
 1.2.0
 * Changed access modifier of Converter (between byte and double) method from private to public
 * Fixed a bug preventing the proper reading of big-endian files

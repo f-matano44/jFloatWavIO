@@ -25,7 +25,7 @@ public final class Converter {
     ) {
         final int SIGN = 1; 
         final int sampleSize = nBits / 8;
-        final double nBitsMax = Math.pow(2, nBits - SIGN) - 1.0;
+        final double nBitsMax = Math.pow(2, nBits - SIGN);
 
         final List<Double> doubleList = new ArrayList<>();
         for (int i = 0; i < byteArray.length; i += sampleSize) {
@@ -71,7 +71,7 @@ public final class Converter {
         final int SIGN = 1;
         final byte intIs4Bytes = 4;
         final int sampleSize = nBits / 8;
-        final double nBitsMax = Math.pow(2, nBits - SIGN) - 1.0;
+        final double nBitsMax = Math.pow(2, nBits - SIGN);
 
         final byte[] byteArray = new byte[doubleArray.length * sampleSize];
         for (int i = 0; i < doubleArray.length; i++) {
