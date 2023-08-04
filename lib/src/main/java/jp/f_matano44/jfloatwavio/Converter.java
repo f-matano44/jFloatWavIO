@@ -23,9 +23,15 @@ public final class Converter {
     public static final double[] byte2double (
         final byte[] byteArray, final int nBits, final boolean isBigEndian
     ) {
-        final int SIGN = 1; 
+        final int SIGN = 1;
         final int sampleSize = nBits / 8;
         final double nBitsMax = Math.pow(2, nBits - SIGN);
+
+        if (byteArray.length % sampleSize != 0) {
+            throw new IllegalArgumentException(
+                "This function's arguments must be (byteArray.length % (nbits/8) == 0)."
+            );
+        }
 
         final List<Double> doubleList = new ArrayList<>();
         for (int i = 0; i < byteArray.length; i += sampleSize) {
@@ -72,6 +78,14 @@ public final class Converter {
         final byte intIs4Bytes = 4;
         final int sampleSize = nBits / 8;
         final double nBitsMax = Math.pow(2, nBits - SIGN);
+
+        final double doubleMin = Arrays.stream(doubleArray).min().getAsDouble();
+        final double doubleMax = Arrays.stream(doubleArray).max().getAsDouble();
+        if (doubleMin < -1.0 || 1.0 < doubleMax) {
+            throw new IllegalArgumentException(
+                "This function's arguments must be (-1.0 <= doubleArray <= 1.0)."
+            );
+        }
 
         final byte[] byteArray = new byte[doubleArray.length * sampleSize];
         for (int i = 0; i < doubleArray.length; i++) {

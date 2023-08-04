@@ -309,7 +309,7 @@ public class WavIO {
     }
 
 
-    /** print audio format to System.out. */
+    /** print audio format to System.out (debug code). */
     public void printAudioFormat() {
         System.out.println("Encoding: " + this.format.getEncoding());
         System.out.println("isBigEndian: " + this.format.isBigEndian());        
