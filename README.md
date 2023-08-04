@@ -5,8 +5,7 @@ It is not compatible between version 0 and version 1.
 
 
 ## Development environment
-* [Java 17 (LTS)](https://adoptium.net/temurin/releases/?version=17)
-* [ant 1.10](https://ant.apache.org/bindownload.cgi)
+* [Gradle](https://gradle.org/) + [Java 17 (LTS)](https://adoptium.net/temurin/releases/?version=17)
 * [VSCode](https://code.visualstudio.com/) + [Checkstyle for Java](https://marketplace.visualstudio.com/items?itemName=shengchen.vscode-checkstyle)
 
 Part of this Library is made that using ChatGPT (GPT-4).
@@ -16,33 +15,73 @@ Part of this Library is made that using ChatGPT (GPT-4).
 | \ |value|
 |---|-----|
 |Encoding|PCM_SIGNED|
-|Channels|1 (monoral) or 2 (stereo)|
+|Channels|1 (mono) or 2 (stereo)|
 |Sample rate|any|
 |Bit depth|8, 16, 24, 32|
 |Endian|any|
 
 
-## Build
-Run under command, and then source codes are builded to jar file in `bin/`.
-```SH
-jfloatwavio/$ ant
-```
-
 ## Usage
-Read to `src/test/Test.java`.
 
-## Run Test.java
-```SH
-jfloatwavio/$ ant
-jfloatwavio/$ cd build/
-jfloatwavio/build/$ java Test
+### Publish to local repository (mavenLocal)
+
+#### Windows
+```Powershell
+jfloatwavio/$ .\gradlew.bat publish
 ```
 
-# CREDIT
-These files aren't licensed under MPL 2.0.<br>
-[Please read this page.](https://zunko.jp/con_ongen_kiyaku.html)
-* `src/test/zundamon.wav`: VOICEVOX:ずんだもん
-* `src/test/metan.wav`: VOICEVOX:四国めたん
+#### macOS / Linux
+```SH
+jfloatwavio/$ ./gradlew publish
+```
+
+### Add dependency
+```kotlin
+repositories {
+    mavenLocal()
+}
+
+dependencies {
+    implementation("jp.f_matano44:jfloatwavio:1.3.0")
+}
+```
+
+### functions
+```Java
+import jp.f_matano44.jfloatwavio.*;
+import javax.sound.sampled.AudioFormat;
+
+// If you use static functions...
+double[][] signals = sGetSignal("path/to/inputFile.wav");
+double[] left_or_mono = signal[0];
+double[] right = signal[1];
+AudioFormat format = sGetFormat("path/to/inputFile.wav");
+int nbits = format.getSampleSizeInBits();
+int fs = (int) format.getSampleRate();
+sOutputData("path/to/outputFile.wav", nbits, fs, mono);
+sOutputData("path/to/outputFile.wav", nbits, fs, left, right);
+
+// else if you use WavIO object...
+try {
+    // input
+    WavIO inWio = new WavIO("path/to/inputFile.wav");
+    double[] left_or_mono = inWio.getSignal()[0];
+    double[] right = inWio.getSignal()[1];
+    AudioFormat format = inWio.getFormat();
+
+    // output
+    WavIO outWio = new WavIO(format, mono);
+    WavIO outWio = new WavIO(foramt, left, right);
+    outWio.outputData("path/to/outputFile.wav");
+} catch (Exception e) {
+    // Error handling
+}
+```
+
+## Run test-code (for developer)
+```SH
+jfloatwavio/$ ./gradlew test
+```
 
 # COPYRIGHT
 Copyright 2023 Fumiyoshi MATANO<br>
