@@ -1,7 +1,10 @@
 # jFloatWavIO
-[![Latest Release](https://gitlab.com/f-matano44/jfloatwavio/-/badges/release.svg)](https://gitlab.com/f-matano44/jfloatwavio/-/releases) <br>
+[![Latest Release](https://gitlab.com/f-matano44/jfloatwavio/-/badges/release.svg)](https://gitlab.com/f-matano44/jfloatwavio/-/releases) [![Build status](https://gitlab.com/f-matano44/jfloatwavio/badges/main/pipeline.svg)](https://gitlab.com/f-matano44/jfloatwavio/-/jobs) [![](https://jitpack.io/v/com.gitlab.f-matano44/jfloatwavio.svg)](https://jitpack.io/#com.gitlab.f-matano44/jfloatwavio)<br>
 Java package to read/write wav file as float or double array. <br>
 It is not compatible between version 0 and version 1.
+
+* Repository & JitPack source: https://gitlab.com/f-matano44/jfloatwavio
+* Mirror repository: https://github.com/f-matano44/jfloatwavio
 
 
 ## Development environment
@@ -23,26 +26,16 @@ Part of this Library is made that using ChatGPT (GPT-4).
 
 ## Usage
 
-### Publish to local repository (mavenLocal)
-
-#### Windows
-```Powershell
-jfloatwavio/$ .\gradlew.bat publish
-```
-
-#### macOS / Linux
-```SH
-jfloatwavio/$ ./gradlew publish
-```
-
-### Add dependency
+### Add dependency (gradle.build.kts)
 ```kotlin
 repositories {
-    mavenLocal()
+    ...
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
-    implementation("jp.f_matano44:jfloatwavio:1.3.0")
+    ...
+    implementation("com.gitlab.f-matano44:jfloatwavio:1.3.1")
 }
 ```
 
@@ -78,10 +71,6 @@ try {
 }
 ```
 
-## Run test-code (for developer)
-```SH
-jfloatwavio/$ ./gradlew test
-```
 
 # COPYRIGHT
 Copyright 2023 Fumiyoshi MATANO<br>

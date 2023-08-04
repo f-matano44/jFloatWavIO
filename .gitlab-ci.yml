@@ -1,0 +1,12 @@
+image: openjdk:17-jdk-alpine
+
+stages:
+  - build
+
+build_job:
+  only:
+    - main
+  stage: build
+  script:
+    - java -version
+    - ./gradlew test
