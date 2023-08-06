@@ -1,8 +1,8 @@
 # directory
 /**/bin
 /**/build
-/.vscode
-/.gradle
+.vscode
+.gradle
 
 # file extention
 *.wav

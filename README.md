@@ -35,7 +35,7 @@ repositories {
 
 dependencies {
     ...
-    implementation("com.gitlab.f-matano44:jfloatwavio:1.3.1")
+    implementation("com.gitlab.f-matano44:jfloatwavio:1.3.2")
 }
 ```
 
