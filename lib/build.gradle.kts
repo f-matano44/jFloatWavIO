@@ -5,9 +5,7 @@
  * For more details on building Java & JVM projects, please refer to https://docs.gradle.org/8.2/userguide/building_java_projects.html in the Gradle documentation.
  */
 
-val gid = "jp.f_matano44"
-val aid = "jfloatwavio"
-val libVersion = "1.3.2"
+val libVersion = "1.4.0"
 
 plugins {
     // Apply the java-library plugin for API and implementation separation.
@@ -23,14 +21,7 @@ repositories {
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api("org.apache.commons:commons-math3:3.6.1")
-
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation("com.google.guava:guava:31.1-jre")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -46,17 +37,19 @@ tasks.named<Test>("test") {
 }
 
 tasks.jar {
-    archiveBaseName.set(aid)
+    // set filename
+    archiveBaseName.set("jfloatwavio")
     archiveVersion.set(libVersion)
-    manifest.attributes["Main-Class"] = gid + "." + aid + ".WavIO"
+    // set Main-Class
+    manifest.attributes["Main-Class"] = "jp.f_matano44.jfloatwavio.WavIO"
 }
 
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
-            groupId = gid
-            artifactId = aid
+            groupId = "jp.f-matano44"
+            artifactId = "jfloatwavio"
             version = libVersion
         }
     }

@@ -1,12 +1,15 @@
-image: openjdk:17-jdk-alpine
+image: eclipse-temurin:17-jdk-alpine
 
 stages:
-  - build
+  - build_and_test
 
 build_job:
   only:
     - main
-  stage: build
+  stage: build_and_test
   script:
     - java -version
+    - ./gradlew build
     - ./gradlew test
+    - ./gradlew jar
+    - ./gradlew publish # to mavenLocal

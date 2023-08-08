@@ -20,7 +20,7 @@ public final class Converter {
      * @param isBigEndian boolean
      * @return Signal: double[]
      */
-    public static final double[] byte2double (
+    public static final double[] byte2double(
         final byte[] byteArray, final int nBits, final boolean isBigEndian
     ) {
         final int SIGN = 1;
@@ -71,7 +71,7 @@ public final class Converter {
      * @param isBigEndian boolean
      * @return Signal: byte[]
      */
-    public static final byte[] double2byte (
+    public static final byte[] double2byte(
         final double[] doubleArray, final int nBits, final boolean isBigEndian
     ) {
         final int SIGN = 1;

@@ -1,10 +1,13 @@
 package jp.f_matano44.jfloatwavio;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.ByteBuffer;
+import org.junit.jupiter.api.Test;
 
+/** Unit test for special case. */
 public class ConverterTestForSpecialCase {
     // ----------------------------------------
     // Zero-input
