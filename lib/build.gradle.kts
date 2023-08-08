@@ -5,7 +5,7 @@
  * For more details on building Java & JVM projects, please refer to https://docs.gradle.org/8.2/userguide/building_java_projects.html in the Gradle documentation.
  */
 
-val libVersion = "1.4.0"
+val libVersion = "1.4.0a"
 
 plugins {
     // Apply the java-library plugin for API and implementation separation.
