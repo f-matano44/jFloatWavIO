@@ -25,8 +25,16 @@ Part of this Library is made that using ChatGPT (GPT-4).
 
 
 ## Usage
-
-### Add dependency (gradle.build.kts)
+### Add dependency 
+#### module-info.java
+```java
+module module_name {
+    ...
+    requires jp.f_matano44.jfloatwavio;
+}
+```
+#### gradle.build.kts
+Please replace {version} with the desired version name (greater than 1.3.1).
 ```kotlin
 repositories {
     ...
@@ -35,11 +43,11 @@ repositories {
 
 dependencies {
     ...
-    implementation("com.gitlab.f-matano44:jfloatwavio:1.3.2")
+    implementation("com.gitlab.f-matano44:jfloatwavio:{version}")
 }
 ```
 
-### functions
+### Functions
 ```Java
 import jp.f_matano44.jfloatwavio.*;
 import javax.sound.sampled.AudioFormat;
@@ -68,6 +76,27 @@ try {
     outWio.outputData("path/to/outputFile.wav");
 } catch (Exception e) {
     // Error handling
+}
+```
+
+
+## For developer
+### Build & Publish to local repository (mavenLocal)
+```SH
+jfloatwavio/$ ./gradlew publish
+```
+
+### Add dependency (gradle.build.kts)
+Please replace {version} with the name of the built version.
+```kotlin
+repositories {
+    ...
+    mavenLocal()
+}
+
+dependencies {
+    ...
+    implementation("jp.f-matano44:jfloatwavio:{version}")
 }
 ```
 

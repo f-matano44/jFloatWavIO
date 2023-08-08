@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -80,7 +79,7 @@ public class WavIO {
      * @param filename The name of the output .wav file.
      * @param nbits The bit depth for the audio data.
      * @param fs The sampling rate of the audio data.
-     * @param monoral The audio signal data to be written.
+     * @param mono The audio signal data to be written.
      * 
      * @return status
      *      <ul>
@@ -163,10 +162,10 @@ public class WavIO {
      * getter of signal data.
      *
      * @return signal data as double[][]
-     * <ul>
-     *      <li> signal[0]: left or mono </li>
-     *      <li> signal[1]: right </li>
-     * </ul>
+     *      <ul>
+     *          <li> signal[0]: left or mono </li>
+     *          <li> signal[1]: right </li>
+     *      </ul>
      */
     public double[][] getSignal() {
         final double[][] x = new double[this.signal.length][];
@@ -340,9 +339,10 @@ public class WavIO {
     }
 
 
-    public static double[][] adjustLength(final double[][] a) {
+    private static double[][] adjustLength(final double[][] a) {
+
         final List<Integer> length = new ArrayList<>();
-        for (final double[] array: a) {
+        for (final double[] array : a) {
             length.add(array.length);
         }
         final int maxLength = Collections.max(length);
