@@ -5,7 +5,7 @@
  * For more details on building Java & JVM projects, please refer to https://docs.gradle.org/8.2/userguide/building_java_projects.html in the Gradle documentation.
  */
 
-val libVersion = "1.4.0a"
+val libVersion = "2.0.0"
 
 plugins {
     // Apply the java-library plugin for API and implementation separation.
@@ -26,9 +26,14 @@ dependencies {
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
     }
+}
+
+tasks.withType<JavaCompile> {
+    options.release.set(8)
 }
 
 tasks.named<Test>("test") {

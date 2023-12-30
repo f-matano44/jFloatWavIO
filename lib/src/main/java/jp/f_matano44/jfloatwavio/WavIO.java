@@ -1,8 +1,10 @@
 package jp.f_matano44.jfloatwavio;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -243,7 +245,7 @@ public class WavIO {
         throws UnsupportedAudioFileException, IOException {
         // wav の読み込み
         final File f = new File(filename);
-        final var ais = AudioSystem.getAudioInputStream(f);
+        final AudioInputStream ais = AudioSystem.getAudioInputStream(f);
 
         // ファイルフォーマットが異常な場合に例外を投げる
         this.format = ais.getFormat();
@@ -257,7 +259,7 @@ public class WavIO {
         final int nBits = this.format.getSampleSizeInBits();
         final boolean isBigEndian = this.format.isBigEndian();
         // Separate by channels
-        final byte[] notSepByteArray = ais.readAllBytes();
+        final byte[] notSepByteArray = readAllBytes(ais);
         final byte[][] sepByteArray = separateByChannels(notSepByteArray);
         // byte -> double
         final double[][] sig = new double[channels][];
@@ -302,8 +304,8 @@ public class WavIO {
         }
 
         // output
-        final var is = new ByteArrayInputStream(conBytes); 
-        final var ais = new AudioInputStream(is, this.format, conBytes.length);
+        final InputStream is = new ByteArrayInputStream(conBytes); 
+        final AudioInputStream ais = new AudioInputStream(is, this.format, conBytes.length);
         AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(filename));
     }
 
@@ -323,6 +325,19 @@ public class WavIO {
 
 
     // private methods -----------------------------------------------------------
+    private static byte[] readAllBytes(AudioInputStream ais) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[1024];
+
+        while ((nRead = ais.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+
+        buffer.flush();
+        return buffer.toByteArray();
+    }
+
     private static boolean isFormatOK(AudioFormat f) {
         final int channels = f.getChannels();
         final int nBits = f.getSampleSizeInBits();

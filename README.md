@@ -1,17 +1,18 @@
 # jFloatWavIO
 [![Latest Release](https://gitlab.com/f-matano44/jfloatwavio/-/badges/release.svg)](https://gitlab.com/f-matano44/jfloatwavio/-/releases) [![Build status](https://gitlab.com/f-matano44/jfloatwavio/badges/main/pipeline.svg)](https://gitlab.com/f-matano44/jfloatwavio/-/jobs) [![](https://jitpack.io/v/com.gitlab.f-matano44/jfloatwavio.svg)](https://jitpack.io/#com.gitlab.f-matano44/jfloatwavio)<br>
 Java package to read/write wav file as float or double array. <br>
-It is not compatible between version 0 and version 1.
+There is no compatibility when the major versions are different.
+
 
 * Repository & JitPack source: https://gitlab.com/f-matano44/jfloatwavio
 * Mirror repository: https://github.com/f-matano44/jfloatwavio
 
 
 ## Development environment
-* [Gradle](https://gradle.org/) + [Java 17 (LTS)](https://adoptium.net/temurin/releases/?version=17)
-* [VSCode](https://code.visualstudio.com/) + [Checkstyle for Java](https://marketplace.visualstudio.com/items?itemName=shengchen.vscode-checkstyle)
+* [Gradle](https://gradle.org/) + Java 8 Compatibility Mode in Java 17
+* [VSCodium](https://github.com/VSCodium/vscodium) + [Checkstyle for Java](https://github.com/jdneo/vscode-checkstyle)
 
-Part of this Library is made that using ChatGPT (GPT-4).
+Part of this Library is made that using ChatGPT.
 
 
 ## Readable/writeable format
@@ -25,15 +26,7 @@ Part of this Library is made that using ChatGPT (GPT-4).
 
 
 ## Usage
-### Add dependency 
-#### module-info.java
-```java
-module module_name {
-    ...
-    requires jp.f_matano44.jfloatwavio;
-}
-```
-#### gradle.build.kts
+### Add dependency to gradle.build.kts
 Please replace {version} with the desired version name (greater than 1.3.1).
 ```kotlin
 repositories {
