@@ -56,9 +56,22 @@ double[][] Converter.float2double(float[][] floatArray)
 
 
 ## For developer
+
 ### Build & Publish to mavenLocal
 ```SH
 jfloatwavio/$ ./gradlew publish
+```
+
+
+### Add dependency (gradle.build.kts)
+```Kotlin
+repositories {
+    mavenLocal()
+}
+
+dependencies {
+    implementation("jp.f-matano44:jfloatwavio:{version}")
+}
 ```
 
 
