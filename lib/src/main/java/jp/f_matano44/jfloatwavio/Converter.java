@@ -116,6 +116,42 @@ public final class Converter {
     }
 
 
+    /**
+     * Converter from double array to float array.
+     *
+     * @param doubleArray double[]
+     * @return float[]
+     */
+    public static float[][] double2float(final double[][] doubleArray) {
+        final float[][] floatArray = new float[doubleArray.length][];
+        for (int i = 0; i < doubleArray.length; i++) {
+            floatArray[i] = new float[doubleArray[i].length];
+            for (int j = 0; j < doubleArray[i].length; j++) {
+                floatArray[i][j] = (float) doubleArray[i][j];
+            }
+        }
+        return floatArray;
+    }
+
+
+    /**
+     * Converter from double array to float array.
+     *
+     * @param floatArray float[]
+     * @return double[]
+     */
+    public static double[][] float2double(final float[][] floatArray) {
+        final double[][] doubleArray = new double[floatArray.length][];
+        for (int i = 0; i < floatArray.length; i++) {
+            doubleArray[i] = new double[floatArray[i].length];
+            for (int j = 0; j < floatArray[i].length; j++) {
+                doubleArray[i][j] = (double) floatArray[i][j];
+            }
+        }
+        return doubleArray;
+    }
+
+
     private static final byte[] switchEndian(final byte[] byteArray) {
         final int tail = byteArray.length - 1;
         for (int i = 0; i < (byteArray.length / 2); i++) {

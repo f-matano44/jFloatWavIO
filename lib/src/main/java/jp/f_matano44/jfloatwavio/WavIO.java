@@ -18,35 +18,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 /** Java library for wav file as float. */
 public class WavIO {
     public static void main(String[] args) {
-        System.out.println("jFloatWavIO @ Mozilla Public License 2.0");
+        System.out.println("jFloatWavIO @ LGPLv3 or later");
         System.out.println("Copyright 2023 Fumiyoshi MATANO");
-    }
-
-
-    /**
-     * Retrieves the wave signal from the provided file and returns it as a 2D array of doubles.
-     * This is a static method that can be used without instantiating the class.
-     *
-     * @param filename 
-     *      The name of the file from which to read the wave signal.
-     * @return
-     *      A 2D array of doubles representing the wave signal.
-     *      <ul>
-     *          <li> success: double[][]
-     *              <ul>
-     *                  <li> signal[0]: left or mono </li>
-     *                  <li> signal[1]: right </li>
-     *              </ul>
-     *          </li>
-     *          <li> failure: null </li>
-     *      </ul>
-     */
-    public static double[][] sGetSignal(final String filename) {
-        try {
-            return new WavIO(filename).getSignal();
-        } catch (Exception e) {
-            return null;
-        }
     }
 
 
@@ -54,21 +27,29 @@ public class WavIO {
      * Retrieves the AudioFormat from the specified file.
      * This is a static method that can be used without instantiating the class.
      *
-     * @param filename
-     *      The name of the file from which to retrieve the AudioFormat.
-     * @return
-     *      The AudioFormat extracted from the file.
+     * @param file The File object from which to retrieve the AudioFormat.
+     * @return The AudioFormat extracted from the file.
+     */
+    public static AudioFormat getAudioFormat(final File file)
+        throws UnsupportedAudioFileException, IOException {
+        return AudioSystem.getAudioInputStream(file).getFormat();
+    }
+
+
+    /**
+     * Retrieves the wave signal from the provided file and returns it as a 2D array of doubles.
+     * This is a static method that can be used without instantiating the class.
+     *
+     * @param file The File object from which to retrieve the AudioFormat.
+     * @return A 2D array of doubles representing the wave signal.
      *      <ul>
-     *          <li> success: AudioFormat </li>
-     *          <li> failure: null </li>
+     *          <li> signal[0]: left or mono </li>
+     *          <li> signal[1]: right </li>
      *      </ul>
      */
-    public static AudioFormat sGetFormat(final String filename) {
-        try {
-            return new WavIO(filename).getFormat();
-        } catch (Exception e) {
-            return null;
-        }
+    public static double[][] wavRead(final File file)
+        throws UnsupportedAudioFileException, IOException {
+        return new WavIO(file.getAbsolutePath()).getSignal();
     }
 
 
@@ -82,18 +63,12 @@ public class WavIO {
      * @param nbits The bit depth for the audio data.
      * @param fs The sampling rate of the audio data.
      * @param mono The audio signal data to be written.
-     * 
-     * @return status
-     *      <ul>
-     *          <li>  0: success </li>
-     *          <li> -1: failure </li>
-     *      </ul>
      */
-    public static int sOutputData(
+    public static void wavWrite(
         final String filename, final int nbits, final double fs,
         final double[] mono
-    ) {
-        return sOutputDataBody(filename, nbits, fs, mono);
+    ) throws UnsupportedAudioFileException, IOException {
+        sOutputDataBody(filename, nbits, fs, mono);
     }
 
 
@@ -108,40 +83,26 @@ public class WavIO {
      * @param fs The sampling rate of the audio data.
      * @param left The audio signal data to be written.
      * @param right The audio signal data to be written.
-     * 
-     * @return status
-     *      <ul>
-     *          <li>  0: success </li>
-     *          <li> -1: failure </li>
-     *      </ul>
      */
-    public static int sOutputData(
+    public static void wavWrite(
         final String filename, final int nbits, final double fs,
         final double[] left, final double[] right
-    ) {
-        return sOutputDataBody(filename, nbits, fs, left, right);
+    ) throws UnsupportedAudioFileException, IllegalArgumentException, IOException {
+        sOutputDataBody(filename, nbits, fs, left, right);
     }
 
 
-    private static int sOutputDataBody(
+    // private methods -----------------------------------------------------------
+    private static void sOutputDataBody(
         final String filename, final int nbits, final double fs,
         final double[]... signal
-    ) {
-        try {
-            final int channels = signal.length;
-            final AudioFormat outputFormat = new AudioFormat(
-                    (float) fs, nbits, channels, true, false
-                );
+    ) throws UnsupportedAudioFileException, IllegalArgumentException, IOException {
+        final int channels = signal.length;
+        final AudioFormat outputFormat = new AudioFormat(
+            (float) fs, nbits, channels, true, false
+        );
 
-            if (isFormatOK(outputFormat)) {
-                new WavIO(outputFormat, signal).outputData(filename);
-                return 0;
-            } else {
-                throw new UnsupportedAudioFileException();
-            }
-        } catch (Exception e) {
-            return -1;
-        }
+        new WavIO(outputFormat, signal).outputData(filename);
     }
 
 
@@ -150,72 +111,7 @@ public class WavIO {
     private final double[][] signal;
 
 
-    /**
-     * getter of audio format.
-     *
-     * @return AudioFormat (Immutable)
-     */
-    public AudioFormat getFormat() {
-        return this.format;
-    }
-
-
-    /**
-     * getter of signal data.
-     *
-     * @return signal data as double[][]
-     *      <ul>
-     *          <li> signal[0]: left or mono </li>
-     *          <li> signal[1]: right </li>
-     *      </ul>
-     */
-    public double[][] getSignal() {
-        final double[][] x = new double[this.signal.length][];
-        for (int i = 0; i < this.signal.length; i++) {
-            x[i] = this.signal[i].clone();
-        }
-        return x;
-    }
-
-
-    /**
-     * getter of signal data.
-     *
-     * @return signal data as float[][]
-     *      <ul>
-     *          <li> signal[0]: left or mono </li>
-     *          <li> signal[1]: right </li>
-     *      </ul>
-     */
-    public float[][] getFloatSignal() {
-        final float[][] xf = new float[this.signal.length][];
-        for (int i = 0; i < this.signal.length; i++) {
-            xf[i] = new float[this.signal[i].length];
-            for (int j = 0; j < this.signal[i].length; j++) {
-                xf[i][j] = (float) this.signal[i][j];
-            }
-        }
-        return xf;
-    }
-
-
-    /**
-     * Constructs a new WavIO object from the provided signal array,
-     * using the provided AudioFormat.
-     *
-     * @param f AudioFormat object specifying the data format of the audio data.
-     * @param signal Array containing the audio signal data.
-     *      <ul>
-     *          <li> signal[0]: left or mono </li>
-     *          <li> signal[1]: right </li>
-     *      </ul>
-     *
-     * @throws UnsupportedAudioFileException
-     *      if the provided AudioFormat is not supported.
-     * @throws IllegalArgumentException
-     *      if AudioFormat and Signal channel counts don't match.
-     */
-    public WavIO(final AudioFormat f, final double[]... signal)
+    private WavIO(final AudioFormat f, final double[]... signal)
         throws UnsupportedAudioFileException, IllegalArgumentException {
         // ファイルフォーマットが異常な場合に例外を投げる
         if (!isFormatOK(f)) {
@@ -234,14 +130,16 @@ public class WavIO {
     }
 
 
-    /**
-     * Constructs a new WavIO object from the provided file name.
-     *
-     * @param filename the name of the file to be processed
-     * @throws IOException if an error occurs during file reading
-     * @throws UnsupportedAudioFileException if Provided file is not supported
-     */
-    public WavIO(final String filename) 
+    private double[][] getSignal() {
+        final double[][] x = new double[this.signal.length][];
+        for (int i = 0; i < this.signal.length; i++) {
+            x[i] = this.signal[i].clone();
+        }
+        return x;
+    }
+
+
+    private WavIO(final String filename) 
         throws UnsupportedAudioFileException, IOException {
         // wav の読み込み
         final File f = new File(filename);
@@ -271,15 +169,7 @@ public class WavIO {
     }
 
 
-    /**
-     * Output the member variable (double[][] signal) as a WAV file.
-     *
-     * @param filename 
-     *      the name of the WAV file to be created
-     * @throws IOException 
-     *      if an I/O error occurs while writing the file
-    */
-    public void outputData(final String filename) throws IOException {
+    private void outputData(final String filename) throws IOException {
         // byte -> double
         final int channels = this.format.getChannels();
         final int nBits = this.format.getSampleSizeInBits();
@@ -311,20 +201,19 @@ public class WavIO {
 
 
     /** print audio format to System.out (debug code). */
-    public void printAudioFormat() {
-        System.out.println("Encoding: " + this.format.getEncoding());
-        System.out.println("isBigEndian: " + this.format.isBigEndian());        
-        System.out.println("Channels:" + this.format.getChannels());
-        System.out.println("");
-        System.out.println("SampleRate: " + this.format.getSampleRate());
-        System.out.println("BitDepth: " + this.format.getSampleSizeInBits());
-        System.out.println("");
-        System.out.println("FrameRate: " + this.format.getFrameRate());
-        System.out.println("FrameSize: " + this.format.getFrameSize());
-    }
+    // private void printAudioFormat() {
+    //     System.out.println("Encoding: " + this.format.getEncoding());
+    //     System.out.println("isBigEndian: " + this.format.isBigEndian());        
+    //     System.out.println("Channels:" + this.format.getChannels());
+    //     System.out.println("");
+    //     System.out.println("SampleRate: " + this.format.getSampleRate());
+    //     System.out.println("BitDepth: " + this.format.getSampleSizeInBits());
+    //     System.out.println("");
+    //     System.out.println("FrameRate: " + this.format.getFrameRate());
+    //     System.out.println("FrameSize: " + this.format.getFrameSize());
+    // }
 
 
-    // private methods -----------------------------------------------------------
     private static byte[] readAllBytes(AudioInputStream ais) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead;
@@ -337,6 +226,7 @@ public class WavIO {
         buffer.flush();
         return buffer.toByteArray();
     }
+
 
     private static boolean isFormatOK(AudioFormat f) {
         final int channels = f.getChannels();
@@ -355,7 +245,6 @@ public class WavIO {
 
 
     private static double[][] adjustLength(final double[][] a) {
-
         final List<Integer> length = new ArrayList<>();
         for (final double[] array : a) {
             length.add(array.length);
@@ -366,7 +255,7 @@ public class WavIO {
         for (int i = 0; i < ret.length; i++) {
             System.arraycopy(a[i], 0, ret[i], 0, a[i].length);
         }
-    
+
         return ret;
     }
 
