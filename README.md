@@ -1,5 +1,5 @@
 # jFloatWavIO
-![LGPLv3 or later](doc/images/lgplv3-88x31.png)
+[![LGPLv3 or later](doc/images/lgplv3-88x31.png)](https://www.gnu.org/graphics/license-logos.html)
 [![JitPack](https://jitpack.io/v/com.gitlab.f-matano44/jfloatwavio.svg)](https://jitpack.io/#com.gitlab.f-matano44/jfloatwavio)
 [![Build status](https://gitlab.com/f-matano44/jfloatwavio/badges/main/pipeline.svg)](https://gitlab.com/f-matano44/jfloatwavio/-/jobs)
 
