@@ -1,5 +1,6 @@
 3.0.0
 + modify functions
+* modify LICENSE (MPLv2 -> LGPLv3 or later)
 
 2.0.0
 * Java17 -> Java8
