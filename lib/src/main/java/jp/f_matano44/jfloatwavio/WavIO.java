@@ -15,7 +15,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 
-/** Java library for wav file as float. */
+/** Java library for wav file as double. */
 public class WavIO {
     public static void main(String[] args) {
         System.out.println("jFloatWavIO @ LGPLv3 or later");
@@ -47,7 +47,7 @@ public class WavIO {
      *          <li> signal[1]: right </li>
      *      </ul>
      */
-    public static double[][] wavRead(final File file)
+    public static double[][] read(final File file)
         throws UnsupportedAudioFileException, IOException {
         return new WavIO(file.getAbsolutePath()).getSignal();
     }
@@ -59,16 +59,16 @@ public class WavIO {
      * Encoding: PCM_SIGNED
      * Endian: Little Endian
      *
-     * @param filename The name of the output .wav file.
+     * @param file The name of the output .wav file.
      * @param nbits The bit depth for the audio data.
      * @param fs The sampling rate of the audio data.
      * @param mono The audio signal data to be written.
      */
-    public static void wavWrite(
-        final String filename, final int nbits, final double fs,
+    public static void write(
+        final File file, final int nbits, final float fs,
         final double[] mono
     ) throws UnsupportedAudioFileException, IOException {
-        sOutputDataBody(filename, nbits, fs, mono);
+        sOutputDataBody(file.getAbsolutePath(), nbits, fs, mono);
     }
 
 
@@ -78,28 +78,28 @@ public class WavIO {
      * Encoding: PCM_SIGNED
      * Endian: Little Endian
      *
-     * @param filename The name of the output .wav file.
+     * @param file The name of the output .wav file.
      * @param nbits The bit depth for the audio data.
      * @param fs The sampling rate of the audio data.
      * @param left The audio signal data to be written.
      * @param right The audio signal data to be written.
      */
-    public static void wavWrite(
-        final String filename, final int nbits, final double fs,
+    public static void write(
+        final File file, final int nbits, final float fs,
         final double[] left, final double[] right
     ) throws UnsupportedAudioFileException, IllegalArgumentException, IOException {
-        sOutputDataBody(filename, nbits, fs, left, right);
+        sOutputDataBody(file.getAbsolutePath(), nbits, fs, left, right);
     }
 
 
     // private methods -----------------------------------------------------------
     private static void sOutputDataBody(
-        final String filename, final int nbits, final double fs,
+        final String filename, final int nbits, final float fs,
         final double[]... signal
     ) throws UnsupportedAudioFileException, IllegalArgumentException, IOException {
         final int channels = signal.length;
         final AudioFormat outputFormat = new AudioFormat(
-            (float) fs, nbits, channels, true, false
+            fs, nbits, channels, true, false
         );
 
         new WavIO(outputFormat, signal).outputData(filename);
