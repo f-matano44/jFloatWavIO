@@ -44,9 +44,9 @@ dependencies {
 ### Functions
 ```Java
 AudioFormat WavIO.getAudioFormat(File file)
-double[][] WavIO.wavRead(File file)  //[0][]: mono or left, [1][]: right
-void WavIO.wavWrite(String filename, int nbits, double fs, double[] mono)
-void WavIO.wavWrite(String filename, int nbits, double fs, double[] left, double[] right)
+double[][] WavIO.read(File file)  //[0][]: mono or left, [1][]: right
+void WavIO.write(File file, int nbits, float fs, double[] mono)
+void WavIO.write(File file, int nbits, float fs, double[] left, double[] right)
 
 double[] Converter.byte2double(byte[] byteArray, int nBits, boolean isBigEndian)
 byte[] Converter.double2byte(double[] doubleArray, int nBits, boolean isBigEndian)
